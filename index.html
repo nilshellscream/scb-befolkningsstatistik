@@ -7,917 +7,166 @@
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,700;1,9..40,300&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
-    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --forest: #004233;
-            --forest-mid: #006650;
-            --mint: #D5FCE9;
-            --mint-soft: #edfaf3;
-            --ink: #0a1f1a;
-            --muted: #7a9e96;
-            --border: rgba(0,66,51,0.1);
-            --card-bg: #ffffff;
-        }
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body {
-            font-family: 'DM Sans', sans-serif;
-            background: #f5faf8;
-            color: var(--ink);
-            min-height: 100vh;
-        }
-        code, .mono { font-family: 'DM Mono', monospace; }
-
-        /* Animations */
-        @keyframes fadeUp {
-            from { opacity: 0; transform: translateY(16px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        @keyframes spin { to { transform: rotate(360deg); } }
-        @keyframes pulse-dot { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
-        @keyframes bar-grow {
-            from { width: 0; }
-            to { width: var(--target-width); }
-        }
-        @keyframes count-in {
-            from { opacity: 0; transform: scale(0.9); }
-            to { opacity: 1; transform: scale(1); }
-        }
-
-        .fade-up { animation: fadeUp 0.45s cubic-bezier(0.16,1,0.3,1) forwards; }
-        .fade-up-1 { animation-delay: 0.05s; opacity: 0; }
-        .fade-up-2 { animation-delay: 0.12s; opacity: 0; }
-        .fade-up-3 { animation-delay: 0.19s; opacity: 0; }
-        .fade-up-4 { animation-delay: 0.26s; opacity: 0; }
-        .fade-up-5 { animation-delay: 0.33s; opacity: 0; }
-        .fade-up-6 { animation-delay: 0.40s; opacity: 0; }
-        .fade-up-7 { animation-delay: 0.47s; opacity: 0; }
-
-        .spinner { animation: spin 0.8s linear infinite; }
-
-        .bar-animated {
-            animation: bar-grow 0.8s cubic-bezier(0.16,1,0.3,1) forwards;
-            animation-delay: 0.3s;
-            width: 0;
-        }
-
-        /* Sidebar */
-        .sidebar {
-            background: white;
-            border-right: 1px solid var(--border);
-            height: 100vh;
-            position: sticky;
-            top: 0;
-            overflow-y: auto;
-            scrollbar-width: thin;
-            scrollbar-color: var(--mint) transparent;
-        }
-
-        /* Custom select */
-        select {
-            appearance: none;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23004233' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
-            background-repeat: no-repeat;
-            background-position: right 12px center;
-            padding-right: 36px !important;
-        }
-
-        /* Toggle switch */
-        .toggle-track {
-            width: 36px; height: 20px;
-            background: #e0ede9;
-            border-radius: 10px;
-            position: relative;
-            transition: background 0.2s;
-            cursor: pointer;
-            flex-shrink: 0;
-        }
-        .toggle-track.on { background: var(--forest); }
-        .toggle-thumb {
-            width: 14px; height: 14px;
-            background: white;
-            border-radius: 50%;
-            position: absolute;
-            top: 3px; left: 3px;
-            transition: transform 0.2s cubic-bezier(0.34,1.56,0.64,1);
-            box-shadow: 0 1px 3px rgba(0,0,0,0.2);
-        }
-        .toggle-track.on .toggle-thumb { transform: translateX(16px); }
-
-        /* Data badge */
-        .badge-live { 
-            display: inline-flex; align-items: center; gap: 5px;
-            background: #dcfce7; color: #166534;
-            font-size: 10px; font-weight: 600; letter-spacing: 0.05em;
-            padding: 2px 8px; border-radius: 99px;
-        }
-        .badge-est { 
-            display: inline-flex; align-items: center; gap: 5px;
-            background: #fef9c3; color: #854d0e;
-            font-size: 10px; font-weight: 600; letter-spacing: 0.05em;
-            padding: 2px 8px; border-radius: 99px;
-        }
-        .live-dot { 
-            width: 6px; height: 6px; border-radius: 50%; background: #16a34a;
-            animation: pulse-dot 1.5s ease-in-out infinite;
-        }
-
-        /* Progress bar */
-        .progress-bar {
-            height: 6px; background: var(--mint); border-radius: 3px;
-            overflow: hidden;
-        }
-        .progress-fill {
-            height: 100%; background: var(--forest);
-            border-radius: 3px;
-        }
-
-        /* Stat row */
-        .stat-row { display: flex; align-items: center; gap: 12px; }
-        .stat-label { font-size: 13px; color: var(--muted); flex: 1; white-space: nowrap; }
-        .stat-value { font-family: 'DM Mono', monospace; font-size: 13px; font-weight: 500; color: var(--forest); min-width: 40px; text-align: right; }
-
-        /* Card hover */
-        .data-card {
-            background: white;
-            border: 1px solid var(--border);
-            border-radius: 16px;
-            padding: 24px;
-            transition: box-shadow 0.2s, transform 0.2s;
-        }
-        .data-card:hover {
-            box-shadow: 0 8px 24px rgba(0,66,51,0.08);
-            transform: translateY(-1px);
-        }
-
-        /* Hero card */
-        .hero-card {
-            background: var(--forest);
-            border-radius: 20px;
-            padding: 40px;
-            color: white;
-            position: relative;
-            overflow: hidden;
-        }
-        .hero-card::before {
-            content: '';
-            position: absolute;
-            top: -60px; right: -60px;
-            width: 240px; height: 240px;
-            background: radial-gradient(circle, rgba(213,252,233,0.15) 0%, transparent 70%);
-            border-radius: 50%;
-        }
-        .hero-card::after {
-            content: '';
-            position: absolute;
-            bottom: -40px; left: -20px;
-            width: 160px; height: 160px;
-            background: radial-gradient(circle, rgba(213,252,233,0.08) 0%, transparent 70%);
-            border-radius: 50%;
-        }
-
-        /* Input */
-        .field-input {
-            width: 100%;
-            padding: 10px 14px;
-            border: 1.5px solid var(--border);
-            border-radius: 10px;
-            font-family: 'DM Sans', sans-serif;
-            font-size: 14px;
-            color: var(--ink);
-            background: white;
-            outline: none;
-            transition: border-color 0.15s;
-        }
-        .field-input:focus { border-color: var(--forest); }
-
-        /* Pill selector */
-        .pill-group { display: flex; gap: 6px; }
-        .pill {
-            flex: 1; padding: 9px 4px; text-align: center;
-            font-size: 12px; font-weight: 600; letter-spacing: 0.04em;
-            border-radius: 8px; cursor: pointer; border: 1.5px solid var(--border);
-            background: white; color: var(--muted);
-            transition: all 0.15s;
-        }
-        .pill.active {
-            background: var(--forest); color: white; border-color: var(--forest);
-        }
-        .pill:hover:not(.active) { border-color: var(--forest); color: var(--forest); }
-
-        /* Analyze button */
-        .analyze-btn {
-            width: 100%; padding: 14px;
-            background: var(--forest); color: white;
-            border: none; border-radius: 12px;
-            font-family: 'DM Sans', sans-serif;
-            font-size: 14px; font-weight: 600;
-            cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;
-            transition: all 0.15s;
-        }
-        .analyze-btn:hover:not(:disabled) { background: var(--forest-mid); transform: translateY(-1px); box-shadow: 0 4px 16px rgba(0,66,51,0.25); }
-        .analyze-btn:active:not(:disabled) { transform: translateY(0); }
-        .analyze-btn:disabled { opacity: 0.5; cursor: not-allowed; }
-
-        /* Export button */
-        .export-btn {
-            padding: 10px 20px;
-            background: white; color: var(--forest);
-            border: 1.5px solid var(--border);
-            border-radius: 10px;
-            font-family: 'DM Sans', sans-serif;
-            font-size: 13px; font-weight: 600;
-            cursor: pointer; display: flex; align-items: center; gap: 8px;
-            transition: all 0.15s;
-        }
-        .export-btn:hover:not(:disabled) { border-color: var(--forest); box-shadow: 0 2px 8px rgba(0,66,51,0.1); }
-        .export-btn:disabled { opacity: 0.4; cursor: not-allowed; }
-
-        /* Label */
-        .field-label {
-            display: block; font-size: 11px; font-weight: 600;
-            text-transform: uppercase; letter-spacing: 0.08em;
-            color: var(--muted); margin-bottom: 8px;
-        }
-
-        /* Section divider */
-        .section-title {
-            font-size: 11px; font-weight: 600;
-            text-transform: uppercase; letter-spacing: 0.1em;
-            color: var(--muted); padding: 16px 0 8px;
-            border-top: 1px solid var(--border); margin-top: 8px;
-        }
-
-        /* Source note */
-        .source-note {
-            background: var(--mint-soft);
-            border: 1px solid rgba(0,66,51,0.08);
-            border-radius: 12px;
-            padding: 16px 20px;
-            font-size: 12px;
-            color: var(--muted);
-            line-height: 1.6;
-        }
-
-        /* Loader overlay */
-        .loading-state {
-            display: flex; flex-direction: column;
-            align-items: center; justify-content: center;
-            min-height: 500px; gap: 16px;
-        }
-        .loading-ring {
-            width: 40px; height: 40px;
-            border: 3px solid var(--mint);
-            border-top-color: var(--forest);
-            border-radius: 50%;
-            animation: spin 0.7s linear infinite;
-        }
-
-        /* Empty state */
-        .empty-state {
-            min-height: 500px; display: flex; flex-direction: column;
-            align-items: center; justify-content: center;
-            gap: 12px; text-align: center; padding: 40px;
-        }
-        .empty-icon {
-            width: 64px; height: 64px;
-            background: var(--mint-soft);
-            border-radius: 16px;
-            display: flex; align-items: center; justify-content: center;
-            color: var(--muted);
-            margin-bottom: 8px;
-        }
-
-        /* Tooltip */
-        .tooltip-wrap { position: relative; display: inline-block; }
-        .tooltip-text {
-            visibility: hidden; opacity: 0;
-            background: var(--ink); color: white;
-            font-size: 11px; padding: 5px 10px;
-            border-radius: 6px; white-space: nowrap;
-            position: absolute; bottom: calc(100% + 6px); left: 50%;
-            transform: translateX(-50%);
-            transition: opacity 0.15s;
-            pointer-events: none;
-            z-index: 100;
-        }
-        .tooltip-wrap:hover .tooltip-text { visibility: visible; opacity: 1; }
-
-        /* Error */
-        .error-box {
-            background: #fef2f2; border: 1px solid #fecaca;
-            border-radius: 12px; padding: 16px 20px;
-            color: #991b1b; font-size: 13px;
-        }
-
-        /* Grid */
-        .results-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 16px;
-        }
-        @media (max-width: 900px) {
-            .results-grid { grid-template-columns: 1fr; }
-            .app-layout { flex-direction: column; }
-            .sidebar { height: auto; position: relative; }
-        }
-
-        .app-layout { display: flex; min-height: 100vh; }
-        .main-content { flex: 1; overflow-y: auto; padding: 32px; }
-
-        /* Scrollbar */
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: var(--mint); border-radius: 3px; }
+        *{box-sizing:border-box;margin:0;padding:0}
+        :root{--forest:#004233;--forest-mid:#006650;--mint:#D5FCE9;--mint-soft:#edfaf3;--ink:#0a1f1a;--muted:#7a9e96;--border:rgba(0,66,51,0.1)}
+        body{font-family:'DM Sans',sans-serif;background:#f5faf8;color:#0a1f1a;min-height:100vh}
+        @keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+        @keyframes spin{to{transform:rotate(360deg)}}
+        @keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+        @keyframes grow{from{width:0}to{width:var(--w)}}
+        .fu{animation:fadeUp .4s cubic-bezier(.16,1,.3,1) forwards}
+        .fu1{animation-delay:.05s;opacity:0}.fu2{animation-delay:.12s;opacity:0}.fu3{animation-delay:.19s;opacity:0}.fu4{animation-delay:.26s;opacity:0}.fu5{animation-delay:.33s;opacity:0}.fu6{animation-delay:.4s;opacity:0}
+        .bar{animation:grow .8s cubic-bezier(.16,1,.3,1) .3s forwards;width:0;height:100%;border-radius:3px}
+        select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23004233' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:36px!important}
+        .tog{width:36px;height:20px;background:#e0ede9;border-radius:10px;position:relative;transition:background .2s;cursor:pointer;flex-shrink:0}
+        .tog.on{background:#004233}
+        .tog::after{content:'';width:14px;height:14px;background:white;border-radius:50%;position:absolute;top:3px;left:3px;transition:transform .2s cubic-bezier(.34,1.56,.64,1);box-shadow:0 1px 3px rgba(0,0,0,.2)}
+        .tog.on::after{transform:translateX(16px)}
+        .inp{width:100%;padding:10px 14px;border:1.5px solid rgba(0,66,51,.1);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:14px;color:#0a1f1a;background:white;outline:none;transition:border-color .15s}
+        .inp:focus{border-color:#004233}
+        .pill{flex:1;padding:9px 4px;text-align:center;font-size:12px;font-weight:600;letter-spacing:.04em;border-radius:8px;cursor:pointer;border:1.5px solid rgba(0,66,51,.1);background:white;color:#7a9e96;transition:all .15s}
+        .pill.on{background:#004233;color:white;border-color:#004233}
+        .abtn{width:100%;padding:14px;background:#004233;color:white;border:none;border-radius:12px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:all .15s}
+        .abtn:hover:not(:disabled){background:#006650;transform:translateY(-1px);box-shadow:0 4px 16px rgba(0,66,51,.25)}
+        .abtn:disabled{opacity:.5;cursor:not-allowed}
+        .ebtn{padding:10px 20px;background:white;color:#004233;border:1.5px solid rgba(0,66,51,.1);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:8px;transition:all .15s}
+        .ebtn:hover:not(:disabled){border-color:#004233}
+        .ebtn:disabled{opacity:.4;cursor:not-allowed}
+        .card{background:white;border:1px solid rgba(0,66,51,.1);border-radius:16px;padding:24px;transition:box-shadow .2s,transform .2s}
+        .card:hover{box-shadow:0 8px 24px rgba(0,66,51,.08);transform:translateY(-1px)}
+        .ring{border:3px solid #D5FCE9;border-top-color:#004233;border-radius:50%;animation:spin .7s linear infinite}
+        .dot{width:6px;height:6px;border-radius:50%;background:#16a34a;animation:pulse 1.5s ease-in-out infinite;display:inline-block}
+        .blive{display:inline-flex;align-items:center;gap:5px;background:#dcfce7;color:#166534;font-size:10px;font-weight:600;letter-spacing:.05em;padding:2px 8px;border-radius:99px}
+        .best{display:inline-flex;align-items:center;gap:5px;background:#fef9c3;color:#854d0e;font-size:10px;font-weight:600;letter-spacing:.05em;padding:2px 8px;border-radius:99px}
+        .layout{display:flex;min-height:100vh}
+        .side{width:280px;min-width:260px;background:white;border-right:1px solid rgba(0,66,51,.1);height:100vh;position:sticky;top:0;overflow-y:auto;padding:28px 20px;display:flex;flex-direction:column;scrollbar-width:thin;scrollbar-color:#D5FCE9 transparent}
+        .main{flex:1;overflow-y:auto;padding:32px}
+        .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+        .hero{background:#004233;border-radius:20px;padding:40px;color:white;position:relative;overflow:hidden}
+        .hero::before{content:'';position:absolute;top:-60px;right:-60px;width:240px;height:240px;background:radial-gradient(circle,rgba(213,252,233,.15) 0%,transparent 70%);border-radius:50%}
+        .lbl{display:block;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:#7a9e96;margin-bottom:8px}
+        .srow{display:flex;align-items:center;gap:12px;margin-bottom:10px}
+        .snote{background:#edfaf3;border:1px solid rgba(0,66,51,.08);border-radius:12px;padding:16px 20px;font-size:12px;color:#7a9e96;line-height:1.6}
+        .errbox{background:#fef2f2;border:1px solid #fecaca;border-radius:12px;padding:16px 20px;color:#991b1b;font-size:13px;margin-bottom:24px}
+        .sec{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.1em;color:#7a9e96;padding:16px 0 8px;border-top:1px solid rgba(0,66,51,.1);margin-top:8px}
+        @media(max-width:860px){.layout{flex-direction:column}.side{width:100%;height:auto;position:relative}.grid{grid-template-columns:1fr}}
+        ::-webkit-scrollbar{width:6px}::-webkit-scrollbar-thumb{background:#D5FCE9;border-radius:3px}
     </style>
 </head>
 <body>
 <div id="root"></div>
 <script type="text/babel">
-const { useState, useCallback } = React;
-
-// ─── SCB API CONFIG ───────────────────────────────────────────────────────────
-const SCB = "https://api.scb.se/OV0104/v1/doris/sv/ssd/START";
-const TABLES = {
-    pop:     `${SCB}/BE/BE0101/BE0101A/BefolkningNy`,
-    edu:     `${SCB}/UF/UF0506/UF0506A/UtbSUNKonLanAr`,
-    income:  `${SCB}/HE/HE0110/HE0110A/SamForvInk1`,
-    civil:   `${SCB}/BE/BE0101/BE0101S/KonCivilstandAr`,
-    background: `${SCB}/BE/BE0101/BE0101Q/UtlSvBakgKonAldLan`,
-};
-
-// SCB age groups
-const AGE_GROUPS = ["18-19","20-24","25-29","30-34","35-39","40-44","45-49","50-54","55-59","60-64","65-69","70-74","75-79","80-84","85-89","90-94","95+"];
-
-// LÄN mapping
-const LAN = [
-    {code:"01",name:"Stockholms län"},{code:"03",name:"Uppsala län"},{code:"04",name:"Södermanlands län"},
-    {code:"05",name:"Östergötlands län"},{code:"06",name:"Jönköpings län"},{code:"07",name:"Kronobergs län"},
-    {code:"08",name:"Kalmar län"},{code:"09",name:"Gotlands län"},{code:"10",name:"Blekinge län"},
-    {code:"12",name:"Skåne län"},{code:"13",name:"Hallands län"},{code:"14",name:"Västra Götalands län"},
-    {code:"17",name:"Värmlands län"},{code:"18",name:"Örebro län"},{code:"19",name:"Västmanlands län"},
-    {code:"20",name:"Dalarnas län"},{code:"21",name:"Gävleborgs län"},{code:"22",name:"Västernorrlands län"},
-    {code:"23",name:"Jämtlands län"},{code:"24",name:"Västerbottens län"},{code:"25",name:"Norrbottens län"}
-];
-
-// Municipality → Län mapping
-const MUN_TO_LAN = {
-    "0180":"01","1480":"14","1280":"12","0380":"03","0580":"05","1980":"19",
-    "1283":"12","0181":"01","0581":"05","1490":"14","1281":"12","1880":"18",
-    "2480":"24","2180":"21","1380":"13"
-};
-
-const TOP_CITIES = [
-    {code:"0180",name:"Stockholm"},{code:"1480",name:"Göteborg"},{code:"1280",name:"Malmö"},
-    {code:"0380",name:"Uppsala"},{code:"0580",name:"Linköping"},{code:"1980",name:"Västerås"},
-    {code:"1283",name:"Helsingborg"},{code:"0181",name:"Södertälje"},{code:"0581",name:"Norrköping"},
-    {code:"1490",name:"Borås"},{code:"1281",name:"Lund"},{code:"1880",name:"Örebro"},
-    {code:"2480",name:"Umeå"},{code:"2180",name:"Gävle"},{code:"1380",name:"Halmstad"}
-];
-
-const GEO_GROUPS = [
-    {label:"Städer",options:TOP_CITIES},
-    {label:"Län",options:LAN}
-];
-
-const ALL_GEO = [...TOP_CITIES,...LAN];
-
-// ─── HELPERS ─────────────────────────────────────────────────────────────────
-function getLanCode(geoCode) {
-    // If it's already a 2-digit lan code
-    if (geoCode.length === 2) return geoCode;
-    return MUN_TO_LAN[geoCode] || geoCode.substring(0,2);
-}
-
-function getAgeGroupsInRange(start, end) {
-    return AGE_GROUPS.filter(g => {
-        const [lo, hi] = g.includes('+') ? [parseInt(g), 99] : g.split('-').map(Number);
-        return lo <= end && hi >= start;
-    });
-}
-
-async function fetchSCB(url, query) {
-    const r = await fetch(url, {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(query)});
-    if (!r.ok) throw new Error(`SCB svarade ${r.status}`);
-    return r.json();
-}
-
-function safePct(a, total) { return total > 0 ? Math.round((a/total)*100) : 0; }
-
-// ─── SVG ICONS ────────────────────────────────────────────────────────────────
-const I = {
-    Target: () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>,
-    Download: () => <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>,
-    ChevronRight: () => <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m9 18 6-6-6-6"/></svg>,
-    BarChart: () => <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M3 3v18h18"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></svg>,
-    Wallet: () => <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1"/><path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4"/></svg>,
-    Grad: () => <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c0 2 2 3 6 3s6-1 6-3v-5"/></svg>,
-    Home: () => <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>,
-    Heart: () => <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>,
-    Brief: () => <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="20" height="14" x="2" y="7" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>,
-    Users: () => <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>,
-    Info: () => <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>,
-    Map: () => <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6l6-3 6 3 6-3v15l-6 3-6-3-6 3V6"/><path d="M9 3v15"/><path d="M15 6v15"/></svg>,
-    Settings: () => <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>,
-};
-
-// ─── SUB-COMPONENTS ───────────────────────────────────────────────────────────
-function Toggle({on, onToggle}) {
-    return (
-        <div className={`toggle-track ${on?'on':''}`} onClick={onToggle}>
-            <div className="toggle-thumb"/>
-        </div>
-    );
-}
-
-function FilterRow({label, on, onToggle}) {
-    return (
-        <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',padding:'10px 0',borderBottom:'1px solid var(--border)'}}>
-            <span style={{fontSize:13,color: on ? 'var(--ink)' : 'var(--muted)',fontWeight:on?500:400,transition:'color 0.15s'}}>{label}</span>
-            <Toggle on={on} onToggle={onToggle}/>
-        </div>
-    );
-}
-
-function Badge({live}) {
-    return live
-        ? <span className="badge-live"><span className="live-dot"/><span>SCB Live</span></span>
-        : <span className="badge-est"><span>Estimat</span></span>;
-}
-
-function BarRow({label, value, color='var(--forest)'}) {
-    return (
-        <div className="stat-row" style={{marginBottom:10}}>
-            <span className="stat-label">{label}</span>
-            <div style={{flex:2,position:'relative',height:6,background:'var(--mint)',borderRadius:3,overflow:'hidden'}}>
-                <div className="bar-animated" style={{'--target-width':`${value}%`,height:'100%',background:color,borderRadius:3}}/>
+const {useState,useCallback}=React;
+const SCB="https://api.scb.se/OV0104/v1/doris/sv/ssd/START";
+const T={pop:`${SCB}/BE/BE0101/BE0101A/BefolkningNy`,edu:`${SCB}/UF/UF0506/UF0506A/UtbSUNKonLanAr`,income:`${SCB}/HE/HE0110/HE0110A/SamForvInk1`,civil:`${SCB}/BE/BE0101/BE0101S/KonCivilstandAr`,bg:`${SCB}/BE/BE0101/BE0101Q/UtlSvBakgKonAldLan`};
+const AG=["18-19","20-24","25-29","30-34","35-39","40-44","45-49","50-54","55-59","60-64","65-69","70-74","75-79","80-84","85-89","90-94","95+"];
+const LAN=[{code:"01",name:"Stockholms län"},{code:"03",name:"Uppsala län"},{code:"04",name:"Södermanlands län"},{code:"05",name:"Östergötlands län"},{code:"06",name:"Jönköpings län"},{code:"07",name:"Kronobergs län"},{code:"08",name:"Kalmar län"},{code:"09",name:"Gotlands län"},{code:"10",name:"Blekinge län"},{code:"12",name:"Skåne län"},{code:"13",name:"Hallands län"},{code:"14",name:"Västra Götalands län"},{code:"17",name:"Värmlands län"},{code:"18",name:"Örebro län"},{code:"19",name:"Västmanlands län"},{code:"20",name:"Dalarnas län"},{code:"21",name:"Gävleborgs län"},{code:"22",name:"Västernorrlands län"},{code:"23",name:"Jämtlands län"},{code:"24",name:"Västerbottens län"},{code:"25",name:"Norrbottens län"}];
+const ML={"0180":"01","1480":"14","1280":"12","0380":"03","0580":"05","1980":"19","1283":"12","0181":"01","0581":"05","1490":"14","1281":"12","1880":"18","2480":"24","2180":"21","1380":"13"};
+const CITIES=[{code:"0180",name:"Stockholm"},{code:"1480",name:"Göteborg"},{code:"1280",name:"Malmö"},{code:"0380",name:"Uppsala"},{code:"0580",name:"Linköping"},{code:"1980",name:"Västerås"},{code:"1283",name:"Helsingborg"},{code:"0181",name:"Södertälje"},{code:"0581",name:"Norrköping"},{code:"1490",name:"Borås"},{code:"1281",name:"Lund"},{code:"1880",name:"Örebro"},{code:"2480",name:"Umeå"},{code:"2180",name:"Gävle"},{code:"1380",name:"Halmstad"}];
+const ALL=[...CITIES,...LAN];
+const lanOf=c=>c.length===2?c:ML[c]||c.slice(0,2);
+const agroups=(s,e)=>AG.filter(g=>{const[lo,hi]=g.includes('+')?[parseInt(g),99]:g.split('-').map(Number);return lo<=e&&hi>=s;});
+const pct=(a,t)=>t>0?Math.round(a/t*100):0;
+async function scb(url,q){const r=await fetch(url,{method:'POST',body:JSON.stringify(q)});if(!r.ok)throw new Error(r.status);return r.json();}
+const Svg={Target:()=><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>,Down:()=><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>,Arr:()=><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m9 18 6-6-6-6"/></svg>,Bar:()=><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M3 3v18h18"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></svg>,Wallet:()=><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1"/><path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4"/></svg>,Grad:()=><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c0 2 2 3 6 3s6-1 6-3v-5"/></svg>,Heart:()=><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>,Users:()=><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>,Info:()=><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>};
+function Badge({live}){return live?<span className="blive"><span className="dot"/><span>SCB Live</span></span>:<span className="best">Estimat</span>;}
+function BarRow({label,value,color='#004233'}){return(<div className="srow"><span style={{fontSize:13,color:'#7a9e96',flex:1,whiteSpace:'nowrap'}}>{label}</span><div style={{flex:2,height:6,background:'#D5FCE9',borderRadius:3,overflow:'hidden'}}><div className="bar" style={{'--w':`${value}%`,background:color}}/></div><span style={{fontFamily:'DM Mono,monospace',fontSize:13,fontWeight:500,color:'#004233',minWidth:40,textAlign:'right'}}>{value}%</span></div>);}
+function Card({icon:Icon,title,live,delay,main,sub,children}){return(<div className={`card fu ${delay}`}><div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:18}}><div style={{display:'flex',alignItems:'center',gap:10}}><div style={{width:32,height:32,background:'#edfaf3',borderRadius:8,display:'flex',alignItems:'center',justifyContent:'center',color:'#004233'}}><Icon/></div><span style={{fontSize:12,fontWeight:600,textTransform:'uppercase',letterSpacing:'.08em',color:'#7a9e96'}}>{title}</span></div><Badge live={live}/></div>{main&&<div style={{marginBottom:20,paddingBottom:16,borderBottom:'1px solid rgba(0,66,51,.1)'}}><div style={{fontSize:28,fontWeight:700,letterSpacing:'-.02em',color:'#004233',fontFamily:'DM Mono,monospace'}}>{main}</div>{sub&&<div style={{fontSize:11,color:'#7a9e96',marginTop:2}}>{sub}</div>}</div>}{children}</div>);}
+function App(){
+    const [loading,setLoading]=useState(false);
+    const [msg,setMsg]=useState('');
+    const [err,setErr]=useState(null);
+    const [res,setRes]=useState(null);
+    const [exp,setExp]=useState(false);
+    const [sel,setSel]=useState({geo:'0180',g:'all',a0:25,a1:54});
+    const [fi,setFi]=useState({income:true,edu:true,civil:true,bg:true});
+    const tog=k=>setFi(f=>({...f,[k]:!f[k]}));
+    const run=useCallback(async()=>{
+        setLoading(true);setErr(null);setRes(null);
+        try{
+            const geoName=ALL.find(x=>x.code===sel.geo)?.name||sel.geo;
+            const lc=lanOf(sel.geo);const isMun=sel.geo.length===4;
+            const ages=Array.from({length:Math.max(0,sel.a1-sel.a0+1)},(_,i)=>(sel.a0+i).toString());
+            const gv=sel.g==='all'?['1','2']:[sel.g];
+            const ag=agroups(sel.a0,sel.a1);
+            setMsg('Hämtar befolkningsdata…');
+            const pd=await scb(T.pop,{query:[{code:'Region',selection:{filter:'item',values:[sel.geo]}},{code:'Kon',selection:{filter:'item',values:gv}},{code:'Alder',selection:{filter:'item',values:ages}},{code:'ContentsCode',selection:{filter:'item',values:['BE0101N1']}},{code:'Tid',selection:{filter:'item',values:['2023']}}],response:{format:'json'}});
+            const pop=pd.data.reduce((a,r)=>a+parseInt(r.values[0]||0),0);
+            let edu=null,civil=null,bgd=null,inc=null;
+            if(fi.edu){setMsg('Hämtar utbildningsdata…');try{const d=await scb(T.edu,{query:[{code:'Lan',selection:{filter:'item',values:[lc]}},{code:'Kon',selection:{filter:'item',values:gv}},{code:'Sun2000Niva',selection:{filter:'item',values:['1','2','3','4','5']}},{code:'Tid',selection:{filter:'item',values:['2022']}}],response:{format:'json'}});const t={lo:0,mi:0,hi:0};d.data.forEach(r=>{const v=parseInt(r.values[0]||0),l=r.key[2];if(l==='1'||l==='2')t.lo+=v;else if(l==='3')t.mi+=v;else t.hi+=v;});const s=t.lo+t.mi+t.hi;edu={high:pct(t.hi,s),mid:pct(t.mi,s),low:pct(t.lo,s),live:true};}catch{edu={high:32,mid:34,low:34,live:false};}}
+            if(fi.civil){setMsg('Hämtar civilståndsdata…');try{const d=await scb(T.civil,{query:[{code:'Region',selection:{filter:'item',values:[sel.geo]}},{code:'Civilstand',selection:{filter:'item',values:['OG','G','EP','SK','ÄNKL']}},{code:'Kon',selection:{filter:'item',values:gv}},{code:'Tid',selection:{filter:'item',values:['2023']}}],response:{format:'json'}});const t={s:0,m:0,o:0};d.data.forEach(r=>{const v=parseInt(r.values[0]||0),c=r.key[1];if(c==='OG')t.s+=v;else if(c==='G')t.m+=v;else t.o+=v;});const s=t.s+t.m+t.o;civil={single:pct(t.s,s),married:pct(t.m,s),other:pct(t.o,s),live:true};}catch{civil={single:40,married:47,other:13,live:false};}}
+            if(fi.bg){setMsg('Hämtar bakgrundsdata…');try{const d=await scb(T.bg,{query:[{code:'Lan',selection:{filter:'item',values:[lc]}},{code:'Kon',selection:{filter:'item',values:gv}},{code:'Alder',selection:{filter:'item',values:ag}},{code:'UtlSvBakgrund',selection:{filter:'item',values:['SVE','UTR','SVEUTRF']}},{code:'Tid',selection:{filter:'item',values:['2023']}}],response:{format:'json'}});const t={s:0,f:0,g:0};d.data.forEach(r=>{const v=parseInt(r.values[0]||0),b=r.key[3];if(b==='SVE')t.s+=v;else if(b==='UTR')t.f+=v;else t.g+=v;});const s=t.s+t.f+t.g;bgd={swe:pct(t.s,s),for:pct(t.f,s),gen:pct(t.g,s),live:true};}catch{bgd={swe:74,for:17,gen:9,live:false};}}
+            if(fi.income){setMsg('Hämtar inkomstdata…');try{const d=await scb(T.income,{query:[{code:'Region',selection:{filter:'item',values:[sel.geo]}},{code:'Kon',selection:{filter:'item',values:gv}},{code:'Tid',selection:{filter:'item',values:['2022']}}],response:{format:'json'}});let tot=0,cnt=0;d.data.forEach(r=>{const v=parseInt(r.values[0]||0);if(v>0){tot+=v;cnt++;}});const avg=cnt>0?Math.round(tot/cnt)*1000:380000;const hi=avg>450000?28:avg>380000?20:13,lo=avg>450000?15:avg>380000?22:30;inc={avg,high:hi,mid:100-hi-lo,low:lo,live:true};}catch{inc={avg:390000,high:18,mid:57,low:25,live:false};}}
+            setRes({pop,geoName,isMun,genderLabel:sel.g==='all'?'Alla kön':sel.g==='1'?'Män':'Kvinnor',ageRange:`${sel.a0}–${sel.a1}`,ts:new Date().toLocaleString('sv-SE'),inc,edu,civil,bgd});
+        }catch(e){setErr('Kunde inte hämta data från SCB. Kontrollera anslutningen och försök igen.');}
+        finally{setLoading(false);setMsg('');}
+    },[sel,fi]);
+    const dl=()=>{if(!res)return;setExp(true);const rows=[['MEDIAPRO AUDIENCE INTELLIGENCE REPORT'],['Skapad',res.ts],['Område',res.geoName],['Demografi',`${res.genderLabel}, ${res.ageRange} år`],['Total population',res.pop],['']];if(res.inc){rows.push(['INKOMST'],['Genomsnittlig inkomst',res.inc.avg,'SEK/år'],['Höginkomst',res.inc.high,'%'],['Medelinkomst',res.inc.mid,'%'],['Låginkomst',res.inc.low,'%'],['']);}if(res.edu){rows.push(['UTBILDNING'],['Eftergymnasial 3+ år',res.edu.high,'%'],['Kortare högskoleutb.',res.edu.mid,'%'],['Gymnasial/Förgymnasial',res.edu.low,'%'],['']);}if(res.civil){rows.push(['CIVILSTÅND'],['Ogifta',res.civil.single,'%'],['Gifta',res.civil.married,'%'],['Övriga',res.civil.other,'%'],['']);}if(res.bgd){rows.push(['BAKGRUND'],['Svensk bakgrund',res.bgd.swe,'%'],['Utrikes född',res.bgd.for,'%'],['Andra generationen',res.bgd.gen,'%']);}const csv=rows.map(r=>r.join(';')).join('\n');const a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8'}));a.download=`MediaPro_${res.geoName.replace(/\s/g,'_')}.csv`;a.click();setTimeout(()=>setExp(false),1000);};
+    return(
+    <div className="layout">
+        <aside className="side">
+            <div style={{display:'flex',alignItems:'center',gap:10,marginBottom:28,paddingBottom:20,borderBottom:'1px solid rgba(0,66,51,.1)'}}>
+                <div style={{width:32,height:32,background:'#004233',borderRadius:8,display:'flex',alignItems:'center',justifyContent:'center',color:'white'}}><Svg.Target/></div>
+                <div><div style={{fontSize:15,fontWeight:700,letterSpacing:'-.02em'}}>MediaPro</div><div style={{fontSize:10,color:'#7a9e96',letterSpacing:'.06em',textTransform:'uppercase'}}>Audience Intelligence</div></div>
             </div>
-            <span className="stat-value mono">{value}%</span>
-        </div>
-    );
-}
-
-function DataCard({icon: Icon, title, badge, children, delay=''}) {
-    return (
-        <div className={`data-card fade-up ${delay}`}>
-            <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:18}}>
-                <div style={{display:'flex',alignItems:'center',gap:10}}>
-                    <div style={{width:32,height:32,background:'var(--mint-soft)',borderRadius:8,display:'flex',alignItems:'center',justifyContent:'center',color:'var(--forest)'}}>
-                        <Icon/>
-                    </div>
-                    <span style={{fontSize:12,fontWeight:600,textTransform:'uppercase',letterSpacing:'0.08em',color:'var(--muted)'}}>{title}</span>
-                </div>
-                <Badge live={badge}/>
+            <div style={{marginBottom:14}}>
+                <label className="lbl">Geografiskt område</label>
+                <select className="inp" value={sel.geo} onChange={e=>setSel({...sel,geo:e.target.value})}>
+                    <optgroup label="Städer">{CITIES.map(c=><option key={c.code} value={c.code}>{c.name}</option>)}</optgroup>
+                    <optgroup label="Län">{LAN.map(l=><option key={l.code} value={l.code}>{l.name}</option>)}</optgroup>
+                </select>
+                {sel.geo.length===4&&<div style={{marginTop:5,fontSize:11,color:'#7a9e96'}}>Demografisk data hämtas på länsnivå</div>}
             </div>
-            {children}
-        </div>
+            <div style={{marginBottom:14}}>
+                <label className="lbl">Åldersintervall</label>
+                <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:8}}>
+                    <div><div style={{fontSize:11,color:'#7a9e96',marginBottom:4}}>Från</div><input type="number" className="inp" style={{textAlign:'center'}} min={0} max={99} value={sel.a0} onChange={e=>setSel({...sel,a0:parseInt(e.target.value)||0})}/></div>
+                    <div><div style={{fontSize:11,color:'#7a9e96',marginBottom:4}}>Till</div><input type="number" className="inp" style={{textAlign:'center'}} min={0} max={99} value={sel.a1} onChange={e=>setSel({...sel,a1:parseInt(e.target.value)||0})}/></div>
+                </div>
+            </div>
+            <div style={{marginBottom:20}}>
+                <label className="lbl">Kön</label>
+                <div style={{display:'flex',gap:6}}>{[['2','Kvinna'],['1','Man'],['all','Alla']].map(([v,l])=><div key={v} className={`pill${sel.g===v?' on':''}`} onClick={()=>setSel({...sel,g:v})}>{l}</div>)}</div>
+            </div>
+            <div className="sec">Datakategorier</div>
+            <div style={{marginBottom:24}}>{[['income','Inkomstnivåer'],['edu','Utbildning'],['civil','Civilstånd'],['bg','Bakgrund']].map(([k,l])=><div key={k} style={{display:'flex',alignItems:'center',justifyContent:'space-between',padding:'10px 0',borderBottom:'1px solid rgba(0,66,51,.1)'}}><span style={{fontSize:13,color:fi[k]?'#0a1f1a':'#7a9e96',fontWeight:fi[k]?500:400,transition:'color .15s'}}>{l}</span><div className={`tog${fi[k]?' on':''}`} onClick={()=>tog(k)}/></div>)}</div>
+            <button className="abtn" onClick={run} disabled={loading}>{loading?<><div className="ring" style={{width:16,height:16,borderWidth:2}}/><span>Analyserar…</span></>:<><span>Starta analys</span><Svg.Arr/></>}</button>
+            <div style={{flex:1}}/>
+            <div style={{marginTop:24,paddingTop:16,borderTop:'1px solid rgba(0,66,51,.1)',fontSize:10,color:'#7a9e96',letterSpacing:'.06em',textTransform:'uppercase',textAlign:'center'}}>v5.1 · SCB API 2023</div>
+        </aside>
+        <main className="main">
+            <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:28}}>
+                <div><h1 style={{fontSize:20,fontWeight:700,letterSpacing:'-.02em'}}>{res?`${res.geoName}, ${res.ageRange} år`:'Välj urval för analys'}</h1>{res&&<div style={{fontSize:12,color:'#7a9e96',marginTop:2}}>{res.genderLabel} · Uppdaterad {res.ts}</div>}</div>
+                <button className="ebtn" onClick={dl} disabled={!res||exp}>{exp?<div className="ring" style={{width:14,height:14,borderWidth:2}}/>:<Svg.Down/>}{exp?'Exporterar…':'Ladda ner CSV'}</button>
+            </div>
+            {!res&&!loading&&!err&&<div style={{minHeight:500,display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',gap:12,textAlign:'center',padding:40,opacity:.5}}><div style={{width:64,height:64,background:'#edfaf3',borderRadius:16,display:'flex',alignItems:'center',justifyContent:'center',color:'#7a9e96',marginBottom:8}}><Svg.Bar/></div><h2 style={{fontSize:16,fontWeight:600}}>Redo att analysera</h2><p style={{fontSize:13,color:'#7a9e96',maxWidth:300,lineHeight:1.6}}>Konfigurera urval i panelen och klicka på <strong>Starta analys</strong>.</p></div>}
+            {loading&&<div style={{minHeight:500,display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',gap:16}}><div className="ring" style={{width:40,height:40}}/><div style={{fontSize:12,color:'#7a9e96',letterSpacing:'.06em',textTransform:'uppercase'}}>{msg}</div></div>}
+            {err&&!loading&&<div className="errbox"><strong>Fel:</strong> {err}</div>}
+            {res&&!loading&&<div>
+                <div className="hero fu fu1" style={{marginBottom:24}}>
+                    <div style={{position:'relative',zIndex:1}}>
+                        <div style={{fontSize:11,fontWeight:600,letterSpacing:'.1em',textTransform:'uppercase',opacity:.5,marginBottom:8,display:'flex',alignItems:'center',gap:6}}><span className="dot" style={{background:'#a7f3d0'}}/>Total population i segmentet · SCB 2023</div>
+                        <div style={{fontSize:56,fontWeight:700,letterSpacing:'-.03em',lineHeight:1,marginBottom:20,fontFamily:'DM Mono,monospace'}}>{res.pop.toLocaleString('sv-SE')}</div>
+                        <div style={{display:'flex',flexWrap:'wrap',gap:8}}>{[res.geoName,res.genderLabel,`${res.ageRange} år`].map(t=><span key={t} style={{background:'rgba(255,255,255,.12)',border:'1px solid rgba(255,255,255,.15)',borderRadius:99,padding:'4px 12px',fontSize:12,fontWeight:500}}>{t}</span>)}</div>
+                    </div>
+                </div>
+                <div className="grid">
+                    {res.inc&&<Card icon={Svg.Wallet} title="Inkomst" live={res.inc.live} delay="fu2" main={`${Math.floor(res.inc.avg/1000)} tkr/år`} sub="Genomsnittlig inkomst"><BarRow label="Höginkomst" value={res.inc.high}/><BarRow label="Medelinkomst" value={res.inc.mid} color="#006650"/><BarRow label="Låginkomst" value={res.inc.low} color="#7a9e96"/></Card>}
+                    {res.edu&&<Card icon={Svg.Grad} title="Utbildning" live={res.edu.live} delay="fu3"><BarRow label="Eftergymnasial 3+ år" value={res.edu.high}/><BarRow label="Kortare högskoleutb." value={res.edu.mid} color="#006650"/><BarRow label="Gymnasial / Förgymnasial" value={res.edu.low} color="#7a9e96"/></Card>}
+                    {res.civil&&<Card icon={Svg.Heart} title="Civilstånd" live={res.civil.live} delay="fu4"><BarRow label="Ogifta" value={res.civil.single}/><BarRow label="Gifta" value={res.civil.married} color="#006650"/><BarRow label="Övriga" value={res.civil.other} color="#7a9e96"/></Card>}
+                    {res.bgd&&<Card icon={Svg.Users} title="Bakgrund" live={res.bgd.live} delay="fu5"><BarRow label="Svensk bakgrund" value={res.bgd.swe}/><BarRow label="Utrikes född" value={res.bgd.for} color="#006650"/><BarRow label="Andra generationen" value={res.bgd.gen} color="#7a9e96"/></Card>}
+                </div>
+                <div className="snote fu fu6" style={{marginTop:20,display:'flex',gap:12,alignItems:'flex-start'}}>
+                    <div style={{marginTop:1,color:'#7a9e96',flexShrink:0}}><Svg.Info/></div>
+                    <div><span className="blive"><span className="dot"/>SCB Live</span> data hämtas direkt från Statistiska centralbyrån. <span className="best">Estimat</span>-värden baseras på regionala demografiska mönster. Befolkning och civilstånd: 2023. Utbildning och bakgrund: 2022–2023.{res.isMun?' Viss statistik visas på länsnivå då kommunuppdelad data ej är tillgänglig.':''}</div>
+                </div>
+            </div>}
+        </main>
+    </div>
     );
 }
-
-function StatValue({main, sub}) {
-    return (
-        <div style={{marginBottom:20,paddingBottom:16,borderBottom:'1px solid var(--border)'}}>
-            <div style={{fontSize:28,fontWeight:700,letterSpacing:'-0.02em',color:'var(--forest)',fontFamily:'DM Mono, monospace'}}>{main}</div>
-            {sub && <div style={{fontSize:11,color:'var(--muted)',marginTop:2}}>{sub}</div>}
-        </div>
-    );
-}
-
-// ─── MAIN APP ─────────────────────────────────────────────────────────────────
-function App() {
-    const [loading, setLoading] = useState(false);
-    const [loadingMsg, setLoadingMsg] = useState('');
-    const [error, setError] = useState(null);
-    const [result, setResult] = useState(null);
-    const [exporting, setExporting] = useState(false);
-
-    const [sel, setSel] = useState({geo:'0180', genderCode:'all', ageStart:25, ageEnd:54});
-    const [filters, setFilters] = useState({income:true,education:true,civilStatus:true,background:true});
-
-    const toggleFilter = k => setFilters(f => ({...f,[k]:!f[k]}));
-
-    const handleAnalyze = useCallback(async () => {
-        setLoading(true); setError(null); setResult(null);
-        try {
-            const geoName = ALL_GEO.find(g=>g.code===sel.geo)?.name || sel.geo;
-            const isMun = sel.geo.length === 4;
-            const lanCode = getLanCode(sel.geo);
-            const ages = Array.from({length: Math.max(0, sel.ageEnd-sel.ageStart+1)}, (_,i)=>(sel.ageStart+i).toString());
-            const genderValues = sel.genderCode === 'all' ? ['1','2'] : [sel.genderCode];
-            const ageGroups = getAgeGroupsInRange(sel.ageStart, sel.ageEnd);
-
-            // ── 1. POPULATION (actual municipality or county) ─────────────────
-            setLoadingMsg('Hämtar befolkningsdata…');
-            const popQ = {
-                query:[
-                    {code:'Region',selection:{filter:'item',values:[sel.geo]}},
-                    {code:'Kon',selection:{filter:'item',values:genderValues}},
-                    {code:'Alder',selection:{filter:'item',values:ages}},
-                    {code:'ContentsCode',selection:{filter:'item',values:['BE0101N1']}},
-                    {code:'Tid',selection:{filter:'item',values:['2023']}}
-                ],
-                response:{format:'json'}
-            };
-            const popData = await fetchSCB(TABLES.pop, popQ);
-            const totalPop = popData.data.reduce((acc,r)=>acc+parseInt(r.values[0]||0),0);
-
-            // ── 2. EDUCATION by county + age group ───────────────────────────
-            let education = null;
-            if (filters.education) {
-                setLoadingMsg('Hämtar utbildningsdata…');
-                try {
-                    // SUN2000 levels: 1=förgymnasial, 2=gymnasial, 3=eftergymnasial <3yr, 4=eftergymnasial 3+yr, 5=forskarutb
-                    const eduQ = {
-                        query:[
-                            {code:'Lan',selection:{filter:'item',values:[lanCode]}},
-                            {code:'Kon',selection:{filter:'item',values:genderValues}},
-                            {code:'Sun2000Niva',selection:{filter:'item',values:['1','2','3','4','5']}},
-                            {code:'Tid',selection:{filter:'item',values:['2022']}}
-                        ],
-                        response:{format:'json'}
-                    };
-                    const eduData = await fetchSCB(TABLES.edu, eduQ);
-                    const totals = {low:0,mid:0,high:0};
-                    eduData.data.forEach(r => {
-                        const level = r.key[2];
-                        const v = parseInt(r.values[0]||0);
-                        if (level==='1'||level==='2') totals.low+=v;
-                        else if (level==='3') totals.mid+=v;
-                        else totals.high+=v;
-                    });
-                    const eduTotal = totals.low+totals.mid+totals.high;
-                    education = {
-                        high: safePct(totals.high,eduTotal),
-                        mid: safePct(totals.mid,eduTotal),
-                        low: safePct(totals.low,eduTotal),
-                        isLive: true
-                    };
-                } catch(e) {
-                    education = {high:32,mid:34,low:34,isLive:false};
-                }
-            }
-
-            // ── 3. CIVIL STATUS ──────────────────────────────────────────────
-            let civilStatus = null;
-            if (filters.civilStatus) {
-                setLoadingMsg('Hämtar civilståndsdata…');
-                try {
-                    const civilQ = {
-                        query:[
-                            {code:'Region',selection:{filter:'item',values:[sel.geo]}},
-                            {code:'Civilstand',selection:{filter:'item',values:['OG','G','EP','SK','ÄNKL']}},
-                            {code:'Kon',selection:{filter:'item',values:genderValues}},
-                            {code:'Tid',selection:{filter:'item',values:['2023']}}
-                        ],
-                        response:{format:'json'}
-                    };
-                    const civilData = await fetchSCB(TABLES.civil, civilQ);
-                    const t = {single:0,married:0,other:0};
-                    civilData.data.forEach(r => {
-                        const cs = r.key[1]; const v = parseInt(r.values[0]||0);
-                        if (cs==='OG') t.single+=v;
-                        else if (cs==='G') t.married+=v;
-                        else t.other+=v;
-                    });
-                    const ct = t.single+t.married+t.other;
-                    civilStatus = {
-                        single: safePct(t.single,ct),
-                        married: safePct(t.married,ct),
-                        other: safePct(t.other,ct),
-                        isLive: true
-                    };
-                } catch(e) {
-                    civilStatus = {single:40,married:47,other:13,isLive:false};
-                }
-            }
-
-            // ── 4. BACKGROUND ────────────────────────────────────────────────
-            let background = null;
-            if (filters.background) {
-                setLoadingMsg('Hämtar bakgrundsdata…');
-                try {
-                    const bgQ = {
-                        query:[
-                            {code:'Lan',selection:{filter:'item',values:[lanCode]}},
-                            {code:'Kon',selection:{filter:'item',values:genderValues}},
-                            {code:'Alder',selection:{filter:'item',values:ageGroups}},
-                            {code:'UtlSvBakgrund',selection:{filter:'item',values:['SVE','UTR','SVEUTRF']}},
-                            {code:'Tid',selection:{filter:'item',values:['2023']}}
-                        ],
-                        response:{format:'json'}
-                    };
-                    const bgData = await fetchSCB(TABLES.background, bgQ);
-                    const t = {swe:0,foreign:0,second:0};
-                    bgData.data.forEach(r => {
-                        const bg=r.key[3]; const v=parseInt(r.values[0]||0);
-                        if(bg==='SVE') t.swe+=v;
-                        else if(bg==='UTR') t.foreign+=v;
-                        else t.second+=v;
-                    });
-                    const bt = t.swe+t.foreign+t.second;
-                    background = {
-                        swedish: safePct(t.swe,bt),
-                        foreign: safePct(t.foreign,bt),
-                        second: safePct(t.second,bt),
-                        isLive: true
-                    };
-                } catch(e) {
-                    background = {swedish:74,foreign:17,second:9,isLive:false};
-                }
-            }
-
-            // ── 5. INCOME — medelinkomst per region ──────────────────────────
-            let income = null;
-            if (filters.income) {
-                setLoadingMsg('Hämtar inkomstdata…');
-                try {
-                    // HE0110 — medelinkomst per region
-                    const incQ = {
-                        query:[
-                            {code:'Region',selection:{filter:'item',values:[sel.geo]}},
-                            {code:'Kon',selection:{filter:'item',values:genderValues}},
-                            {code:'Tid',selection:{filter:'item',values:['2022']}}
-                        ],
-                        response:{format:'json'}
-                    };
-                    const incData = await fetchSCB(TABLES.income, incQ);
-                    let totalInc=0, count=0;
-                    incData.data.forEach(r=>{ const v=parseInt(r.values[0]||0); if(v>0){totalInc+=v;count++;} });
-                    const avg = count>0 ? Math.round(totalInc/count)*1000 : 380000;
-                    // Distribute around average
-                    const highPct = Math.round(avg > 450000 ? 28 : avg > 380000 ? 20 : 13);
-                    const lowPct = Math.round(avg > 450000 ? 15 : avg > 380000 ? 22 : 30);
-                    income = {average:avg, high:highPct, mid:100-highPct-lowPct, low:lowPct, isLive:true};
-                } catch(e) {
-                    income = {average:390000,high:18,mid:57,low:25,isLive:false};
-                }
-            }
-
-            setResult({
-                totalPop, geoName, isMun, lanCode,
-                genderLabel: sel.genderCode==='all'?'Alla kön':sel.genderCode==='1'?'Män':'Kvinnor',
-                ageRange:`${sel.ageStart}–${sel.ageEnd}`,
-                timestamp: new Date().toLocaleString('sv-SE'),
-                income, education, civilStatus, background
-            });
-        } catch(err) {
-            setError('Kunde inte hämta data från SCB. Kontrollera din internetanslutning och försök igen.');
-            console.error(err);
-        } finally {
-            setLoading(false); setLoadingMsg('');
-        }
-    }, [sel, filters]);
-
-    const exportCSV = () => {
-        if (!result) return;
-        setExporting(true);
-        const rows = [
-            ['MEDIAPRO AUDIENCE INTELLIGENCE REPORT'],
-            ['Skapad', result.timestamp],
-            ['Område', result.geoName],
-            ['Demografi', `${result.genderLabel}, ${result.ageRange} år`],
-            ['Total population', result.totalPop],
-            [''],
-        ];
-        const add = (title, d, keys) => {
-            rows.push([title]);
-            keys.forEach(([label,key]) => rows.push([label, d[key], '%']));
-            rows.push(['','','']);
-        };
-        if(result.income) {
-            rows.push(['INKOMST']);
-            rows.push(['Genomsnittlig inkomst',result.income.average,'SEK/år']);
-            rows.push(['Höginkomst',result.income.high,'%']);
-            rows.push(['Medelinkomst',result.income.mid,'%']);
-            rows.push(['Låginkomst',result.income.low,'%']);
-            rows.push(['']);
-        }
-        if(result.education) add('UTBILDNING',result.education,[['Eftergymnasial 3+ år','high'],['Kortare högskoleutb.','mid'],['Gymnasial/Förgymnasial','low']]);
-        if(result.civilStatus) add('CIVILSTÅND',result.civilStatus,[['Ogifta','single'],['Gifta','married'],['Övriga','other']]);
-        if(result.background) add('BAKGRUND',result.background,[['Svensk bakgrund','swedish'],['Utrikes född','foreign'],['Andra generationen','second']]);
-
-        const csv = rows.map(r=>r.join(';')).join('\n');
-        const blob = new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8'});
-        const a = document.createElement('a');
-        a.href = URL.createObjectURL(blob);
-        a.download = `MediaPro_${result.geoName.replace(/\s/g,'_')}_${sel.ageStart}-${sel.ageEnd}.csv`;
-        a.click();
-        setTimeout(()=>setExporting(false),1000);
-    };
-
-    return (
-        <div className="app-layout">
-            {/* ── SIDEBAR ── */}
-            <aside className="sidebar" style={{width:280,minWidth:260,padding:'28px 20px',display:'flex',flexDirection:'column',gap:0}}>
-                {/* Logo */}
-                <div style={{display:'flex',alignItems:'center',gap:10,marginBottom:28,paddingBottom:20,borderBottom:'1px solid var(--border)'}}>
-                    <div style={{width:32,height:32,background:'var(--forest)',borderRadius:8,display:'flex',alignItems:'center',justifyContent:'center',color:'white'}}>
-                        <I.Target/>
-                    </div>
-                    <div>
-                        <div style={{fontSize:15,fontWeight:700,letterSpacing:'-0.02em',color:'var(--ink)'}}>MediaPro</div>
-                        <div style={{fontSize:10,color:'var(--muted)',letterSpacing:'0.06em',textTransform:'uppercase'}}>Audience Intelligence</div>
-                    </div>
-                </div>
-
-                {/* Filters header */}
-                <div style={{display:'flex',alignItems:'center',gap:6,marginBottom:16,color:'var(--muted)'}}>
-                    <I.Settings/><span style={{fontSize:11,fontWeight:600,textTransform:'uppercase',letterSpacing:'0.08em'}}>Urval</span>
-                </div>
-
-                {/* Geography */}
-                <div style={{marginBottom:14}}>
-                    <label className="field-label"><I.Map/> Geografiskt område</label>
-                    <select className="field-input" value={sel.geo} onChange={e=>setSel({...sel,geo:e.target.value})}>
-                        {GEO_GROUPS.map(g=>(
-                            <optgroup key={g.label} label={g.label}>
-                                {g.options.map(o=><option key={o.code} value={o.code}>{o.name}</option>)}
-                            </optgroup>
-                        ))}
-                    </select>
-                    {sel.geo.length===4 && <div style={{marginTop:5,fontSize:11,color:'var(--muted)'}}>Demografisk data hämtas på länsnivå</div>}
-                </div>
-
-                {/* Age */}
-                <div style={{marginBottom:14}}>
-                    <label className="field-label">Åldersintervall</label>
-                    <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:8}}>
-                        <div>
-                            <div style={{fontSize:11,color:'var(--muted)',marginBottom:4}}>Från</div>
-                            <input type="number" className="field-input" style={{textAlign:'center'}} min={0} max={99} value={sel.ageStart} onChange={e=>setSel({...sel,ageStart:parseInt(e.target.value)||0})}/>
-                        </div>
-                        <div>
-                            <div style={{fontSize:11,color:'var(--muted)',marginBottom:4}}>Till</div>
-                            <input type="number" className="field-input" style={{textAlign:'center'}} min={0} max={99} value={sel.ageEnd} onChange={e=>setSel({...sel,ageEnd:parseInt(e.target.value)||0})}/>
-                        </div>
-                    </div>
-                </div>
-
-                {/* Gender */}
-                <div style={{marginBottom:20}}>
-                    <label className="field-label">Kön</label>
-                    <div className="pill-group">
-                        {[['2','Kvinna'],['1','Man'],['all','Alla']].map(([v,l])=>(
-                            <div key={v} className={`pill ${sel.genderCode===v?'active':''}`} onClick={()=>setSel({...sel,genderCode:v})}>{l}</div>
-                        ))}
-                    </div>
-                </div>
-
-                {/* Data filters */}
-                <div className="section-title" style={{display:'flex',alignItems:'center',gap:6}}>
-                    Datakategorier
-                </div>
-                <div style={{marginBottom:24}}>
-                    {[
-                        ['income','Inkomstnivåer'],
-                        ['education','Utbildning'],
-                        ['civilStatus','Civilstånd'],
-                        ['background','Bakgrund'],
-                    ].map(([k,l])=>(
-                        <FilterRow key={k} label={l} on={filters[k]} onToggle={()=>toggleFilter(k)}/>
-                    ))}
-                </div>
-
-                {/* Analyze */}
-                <button className="analyze-btn" onClick={handleAnalyze} disabled={loading}>
-                    {loading
-                        ? <><div className="loading-ring" style={{width:16,height:16,borderWidth:2}}/><span>Analyserar…</span></>
-                        : <><span>Starta analys</span><I.ChevronRight/></>
-                    }
-                </button>
-
-                <div style={{flex:1}}/>
-
-                {/* Version */}
-                <div style={{marginTop:24,paddingTop:16,borderTop:'1px solid var(--border)',fontSize:10,color:'var(--muted)',letterSpacing:'0.06em',textTransform:'uppercase',textAlign:'center'}}>
-                    v5.0 · SCB API 2023
-                </div>
-            </aside>
-
-            {/* ── MAIN CONTENT ── */}
-            <main className="main-content">
-                {/* Top bar */}
-                <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:28}}>
-                    <div>
-                        <h1 style={{fontSize:20,fontWeight:700,letterSpacing:'-0.02em',color:'var(--ink)'}}>
-                            {result ? `${result.geoName}, ${result.ageRange} år` : 'Välj urval för analys'}
-                        </h1>
-                        {result && <div style={{fontSize:12,color:'var(--muted)',marginTop:2}}>{result.genderLabel} · Uppdaterad {result.timestamp}</div>}
-                    </div>
-                    <button className="export-btn" onClick={exportCSV} disabled={!result||exporting}>
-                        {exporting ? <div className="loading-ring" style={{width:14,height:14,borderWidth:2}}/> : <I.Download/>}
-                        {exporting ? 'Exporterar…' : 'Ladda ner CSV'}
-                    </button>
-                </div>
-
-                {/* Empty state */}
-                {!result && !loading && !error && (
-                    <div className="empty-state">
-                        <div className="empty-icon"><I.BarChart/></div>
-                        <h2 style={{fontSize:16,fontWeight:600,color:'var(--ink)'}}>Redo att analysera</h2>
-                        <p style={{fontSize:13,color:'var(--muted)',maxWidth:320,lineHeight:1.6}}>
-                            Konfigurera ditt urval i panelen till vänster och klicka på <strong>Starta analys</strong> för att hämta statistik från SCB.
-                        </p>
-                    </div>
-                )}
-
-                {/* Loading */}
-                {loading && (
-                    <div className="loading-state">
-                        <div className="loading-ring"/>
-                        <div style={{fontSize:12,color:'var(--muted)',letterSpacing:'0.06em',textTransform:'uppercase'}}>{loadingMsg}</div>
-                    </div>
-                )}
-
-                {/* Error */}
-                {error && !loading && (
-                    <div className="error-box" style={{marginBottom:24}}>
-                        <strong>Fel:</strong> {error}
-                    </div>
-                )}
-
-                {/* Results */}
-                {result && !loading && (
-                    <div>
-                        {/* Hero */}
-                        <div className="hero-card fade-up fade-up-1" style={{marginBottom:24}}>
-                            <div style={{position:'relative',zIndex:1}}>
-                                <div style={{fontSize:11,fontWeight:600,letterSpacing:'0.1em',textTransform:'uppercase',opacity:0.5,marginBottom:8,display:'flex',alignItems:'center',gap:6}}>
-                                    <span className="live-dot" style={{background:'#a7f3d0'}}/>
-                                    Total population i segmentet · SCB 2023
-                                </div>
-                                <div style={{fontSize:56,fontWeight:700,letterSpacing:'-0.03em',lineHeight:1,marginBottom:20,fontFamily:'DM Mono, monospace'}}>
-                                    {result.totalPop.toLocaleString('sv-SE')}
-                                </div>
-                                <div style={{display:'flex',flexWrap:'wrap',gap:8}}>
-                                    {[result.geoName, result.genderLabel, `${result.ageRange} år`].map(t=>(
-                                        <span key={t} style={{background:'rgba(255,255,255,0.12)',border:'1px solid rgba(255,255,255,0.15)',borderRadius:99,padding:'4px 12px',fontSize:12,fontWeight:500}}>{t}</span>
-                                    ))}
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Cards grid */}
-                        <div className="results-grid">
-
-                            {/* Income */}
-                            {result.income && (
-                                <DataCard icon={I.Wallet} title="Inkomst" badge={result.income.isLive} delay="fade-up-2">
-                                    <StatValue main={`${Math.floor(result.income.average/1000)} tkr/år`} sub="Genomsnittlig inkomst"/>
-                                    <BarRow label="Höginkomst" value={result.income.high}/>
-                                    <BarRow label="Medelinkomst" value={result.income.mid} color="var(--forest-mid)"/>
-                                    <BarRow label="Låginkomst" value={result.income.low} color="#7a9e96"/>
-                                </DataCard>
-                            )}
-
-                            {/* Education */}
-                            {result.education && (
-                                <DataCard icon={I.Grad} title="Utbildning" badge={result.education.isLive} delay="fade-up-3">
-                                    <BarRow label="Eftergymnasial 3+ år" value={result.education.high}/>
-                                    <BarRow label="Kortare högskoleutb." value={result.education.mid} color="var(--forest-mid)"/>
-                                    <BarRow label="Gymnasial / Förgymnasial" value={result.education.low} color="#7a9e96"/>
-                                </DataCard>
-                            )}
-
-                            {/* Civil status */}
-                            {result.civilStatus && (
-                                <DataCard icon={I.Heart} title="Civilstånd" badge={result.civilStatus.isLive} delay="fade-up-4">
-                                    <BarRow label="Ogifta" value={result.civilStatus.single}/>
-                                    <BarRow label="Gifta" value={result.civilStatus.married} color="var(--forest-mid)"/>
-                                    <BarRow label="Övriga" value={result.civilStatus.other} color="#7a9e96"/>
-                                </DataCard>
-                            )}
-
-                            {/* Background */}
-                            {result.background && (
-                                <DataCard icon={I.Users} title="Bakgrund" badge={result.background.isLive} delay="fade-up-6">
-                                    <BarRow label="Svensk bakgrund" value={result.background.swedish}/>
-                                    <BarRow label="Utrikes född" value={result.background.foreign} color="var(--forest-mid)"/>
-                                    <BarRow label="Andra generationen" value={result.background.second} color="#7a9e96"/>
-                                </DataCard>
-                            )}
-                        </div>
-
-                        {/* Source note */}
-                        <div className="source-note fade-up fade-up-7" style={{marginTop:20,display:'flex',gap:12,alignItems:'flex-start'}}>
-                            <div style={{marginTop:1,color:'var(--muted)',flexShrink:0}}><I.Info/></div>
-                            <div>
-                                <span className="badge-live" style={{marginBottom:6,display:'inline-flex'}}><span className="live-dot"/>SCB Live</span>
-                                {' '}data hämtas direkt från Statistiska centralbyrån.{' '}
-                                <span className="badge-est">Estimat</span>
-                                {' '}-värden baseras på regionala demografiska mönster och uppdateras inte i realtid. Befolkning och civilstånd: 2023. Utbildning och bakgrund: 2022–2023.
-                                {result.isMun && ' Viss statistik visas på länsnivå då kommunuppdelad data ej är tillgänglig.'}
-                            </div>
-                        </div>
-                    </div>
-                )}
-            </main>
-        </div>
-    );
-}
-
 ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
 </script>
 </body>
