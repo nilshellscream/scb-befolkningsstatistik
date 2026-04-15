@@ -128,7 +128,7 @@ function App(){
     const [res,setRes]=useState(null);
     const [exp,setExp]=useState(false);
     const [sel,setSel]=useState({geo:'0180',g:'all',a0:25,a1:54});
-    const [fi,setFi]=useState({income:true,edu:true,civil:true,bg:true});
+    const [fi,setFi]=useState({income:false,edu:true,civil:true,bg:true});
     const tog=k=>setFi(f=>({...f,[k]:!f[k]}));
 
     const run=useCallback(async()=>{
@@ -326,10 +326,10 @@ function App(){
                 <div style={{display:'flex',gap:5}}>{[['2','Kvinna'],['1','Man'],['all','Alla']].map(([v,l])=><div key={v} className={`pill${sel.g===v?' on':''}`} onClick={()=>setSel({...sel,g:v})}>{l}</div>)}</div>
             </div>
             <div className="sec">Datakategorier</div>
-            <div style={{marginBottom:20}}>{[['income','Inkomstnivåer'],['edu','Utbildning'],['civil','Civilstånd'],['bg','Bakgrund']].map(([k,l])=><div key={k} style={{display:'flex',alignItems:'center',justifyContent:'space-between',padding:'9px 0',borderBottom:'1px solid rgba(0,66,51,.08)'}}><span style={{fontSize:13,color:fi[k]?'#0a1f1a':'#7a9e96',fontWeight:fi[k]?500:400}}>{l}</span><div className={`tog${fi[k]?' on':''}`} onClick={()=>tog(k)}/></div>)}</div>
+            <div style={{marginBottom:20}}>{[['edu','Utbildning'],['civil','Civilstånd'],['bg','Bakgrund']].map(([k,l])=><div key={k} style={{display:'flex',alignItems:'center',justifyContent:'space-between',padding:'9px 0',borderBottom:'1px solid rgba(0,66,51,.08)'}}><span style={{fontSize:13,color:fi[k]?'#0a1f1a':'#7a9e96',fontWeight:fi[k]?500:400}}>{l}</span><div className={`tog${fi[k]?' on':''}`} onClick={()=>tog(k)}/></div>)}</div>
             <button className="abtn" onClick={run} disabled={loading}>{loading?<><div className="ring" style={{width:15,height:15,borderWidth:2}}/><span>Analyserar…</span></>:<><span>Starta analys</span><IArr/></>}</button>
             <div style={{flex:1}}/>
-            <div style={{marginTop:20,paddingTop:14,borderTop:'1px solid rgba(0,66,51,.1)',fontSize:9,color:'#7a9e96',letterSpacing:'.06em',textTransform:'uppercase',textAlign:'center'}}>v6.5 · SCB API 2024</div>
+            <div style={{marginTop:20,paddingTop:14,borderTop:'1px solid rgba(0,66,51,.1)',fontSize:9,color:'#7a9e96',letterSpacing:'.06em',textTransform:'uppercase',textAlign:'center'}}>v6.6 · SCB API 2024</div>
         </aside>
 
         <main className="main">
@@ -354,11 +354,7 @@ function App(){
                     </div>
                 </div>
                 <div className="grid">
-                    {res.inc&&<Card icon={IWallet} title="Inkomst" delay="fu2" main={`${Math.floor(res.inc.avg/1000)} tkr/år`} sub="Medelinkomst · SCB 2023" note="Förvärvsinkomst, åldersgruppsnivå">
-                        <BarRow label="Höginkomst (>600k)" value={res.inc.high}/>
-                        <BarRow label="Medelinkomst (250–600k)" value={res.inc.mid} color="#006650"/>
-                        <BarRow label="Låginkomst (<250k)" value={res.inc.low} color="#7a9e96"/>
-                    </Card>}
+
 
                     {res.edu&&<Card icon={IGrad} title="Utbildning" delay="fu3" note="SCB 2024">
                         <BarRow label="Eftergymnasial 3+ år" value={res.edu.high}/>
