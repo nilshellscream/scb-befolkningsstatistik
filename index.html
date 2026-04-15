@@ -10,49 +10,50 @@
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
     <style>
         *{box-sizing:border-box;margin:0;padding:0}
-        :root{--forest:#004233;--forest-mid:#006650;--mint:#D5FCE9;--mint-soft:#edfaf3;--ink:#0a1f1a;--muted:#7a9e96;--border:rgba(0,66,51,0.1)}
-        body{font-family:'DM Sans',sans-serif;background:#f5faf8;color:#0a1f1a;min-height:100vh}
+        :root{--f:#004233;--m:#006650;--mint:#D5FCE9;--ms:#edfaf3;--ink:#0a1f1a;--mu:#7a9e96;--b:rgba(0,66,51,0.1)}
+        body{font-family:'DM Sans',sans-serif;background:#f5faf8;color:var(--ink);min-height:100vh}
         @keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
         @keyframes spin{to{transform:rotate(360deg)}}
         @keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
         @keyframes grow{from{width:0}to{width:var(--w)}}
         .fu{animation:fadeUp .4s cubic-bezier(.16,1,.3,1) forwards}
-        .fu1{animation-delay:.05s;opacity:0}.fu2{animation-delay:.12s;opacity:0}.fu3{animation-delay:.19s;opacity:0}.fu4{animation-delay:.26s;opacity:0}.fu5{animation-delay:.33s;opacity:0}.fu6{animation-delay:.4s;opacity:0}
+        .fu1{animation-delay:.05s;opacity:0}.fu2{animation-delay:.12s;opacity:0}.fu3{animation-delay:.19s;opacity:0}
+        .fu4{animation-delay:.26s;opacity:0}.fu5{animation-delay:.33s;opacity:0}.fu6{animation-delay:.4s;opacity:0}
         .bar{animation:grow .8s cubic-bezier(.16,1,.3,1) .3s forwards;width:0;height:100%;border-radius:3px}
         select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23004233' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:36px!important}
         .tog{width:36px;height:20px;background:#e0ede9;border-radius:10px;position:relative;transition:background .2s;cursor:pointer;flex-shrink:0}
-        .tog.on{background:#004233}
+        .tog.on{background:var(--f)}
         .tog::after{content:'';width:14px;height:14px;background:white;border-radius:50%;position:absolute;top:3px;left:3px;transition:transform .2s cubic-bezier(.34,1.56,.64,1);box-shadow:0 1px 3px rgba(0,0,0,.2)}
         .tog.on::after{transform:translateX(16px)}
-        .inp{width:100%;padding:10px 14px;border:1.5px solid rgba(0,66,51,.1);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:14px;color:#0a1f1a;background:white;outline:none;transition:border-color .15s}
-        .inp:focus{border-color:#004233}
-        .pill{flex:1;padding:9px 4px;text-align:center;font-size:12px;font-weight:600;letter-spacing:.04em;border-radius:8px;cursor:pointer;border:1.5px solid rgba(0,66,51,.1);background:white;color:#7a9e96;transition:all .15s}
-        .pill.on{background:#004233;color:white;border-color:#004233}
-        .abtn{width:100%;padding:14px;background:#004233;color:white;border:none;border-radius:12px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:all .15s}
-        .abtn:hover:not(:disabled){background:#006650;transform:translateY(-1px);box-shadow:0 4px 16px rgba(0,66,51,.25)}
+        .inp{width:100%;padding:9px 12px;border:1.5px solid var(--b);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:14px;color:var(--ink);background:white;outline:none;transition:border-color .15s}
+        .inp:focus{border-color:var(--f)}
+        .inp[type=number]{text-align:center}
+        .pill{flex:1;padding:8px 4px;text-align:center;font-size:12px;font-weight:600;border-radius:8px;cursor:pointer;border:1.5px solid var(--b);background:white;color:var(--mu);transition:all .15s}
+        .pill.on{background:var(--f);color:white;border-color:var(--f)}
+        .abtn{width:100%;padding:13px;background:var(--f);color:white;border:none;border-radius:12px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:all .15s}
+        .abtn:hover:not(:disabled){background:var(--m);transform:translateY(-1px)}
         .abtn:disabled{opacity:.5;cursor:not-allowed}
-        .ebtn{padding:10px 20px;background:white;color:#004233;border:1.5px solid rgba(0,66,51,.1);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:8px;transition:all .15s}
-        .ebtn:hover:not(:disabled){border-color:#004233}
+        .ebtn{padding:9px 16px;background:white;color:var(--f);border:1.5px solid var(--b);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:6px;transition:all .15s;white-space:nowrap}
+        .ebtn:hover:not(:disabled){border-color:var(--f)}
         .ebtn:disabled{opacity:.4;cursor:not-allowed}
-        .card{background:white;border:1px solid rgba(0,66,51,.1);border-radius:16px;padding:24px;transition:box-shadow .2s,transform .2s}
+        .card{background:white;border:1px solid var(--b);border-radius:16px;padding:22px;transition:box-shadow .2s,transform .2s}
         .card:hover{box-shadow:0 8px 24px rgba(0,66,51,.08);transform:translateY(-1px)}
-        .ring{border:3px solid #D5FCE9;border-top-color:#004233;border-radius:50%;animation:spin .7s linear infinite}
+        .ring{border:3px solid var(--mint);border-top-color:var(--f);border-radius:50%;animation:spin .7s linear infinite}
         .dot{width:6px;height:6px;border-radius:50%;background:#16a34a;animation:pulse 1.5s ease-in-out infinite;display:inline-block}
-        .blive{display:inline-flex;align-items:center;gap:5px;background:#dcfce7;color:#166534;font-size:10px;font-weight:600;letter-spacing:.05em;padding:2px 8px;border-radius:99px}
-        .best{display:inline-flex;align-items:center;gap:5px;background:#fef9c3;color:#854d0e;font-size:10px;font-weight:600;letter-spacing:.05em;padding:2px 8px;border-radius:99px}
+        .live{display:inline-flex;align-items:center;gap:5px;background:#dcfce7;color:#166534;font-size:10px;font-weight:600;padding:2px 8px;border-radius:99px}
         .layout{display:flex;min-height:100vh}
-        .side{width:280px;min-width:260px;background:white;border-right:1px solid rgba(0,66,51,.1);height:100vh;position:sticky;top:0;overflow-y:auto;padding:28px 20px;display:flex;flex-direction:column;scrollbar-width:thin;scrollbar-color:#D5FCE9 transparent}
-        .main{flex:1;overflow-y:auto;padding:32px}
-        .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
-        .hero{background:#004233;border-radius:20px;padding:40px;color:white;position:relative;overflow:hidden}
-        .hero::before{content:'';position:absolute;top:-60px;right:-60px;width:240px;height:240px;background:radial-gradient(circle,rgba(213,252,233,.15) 0%,transparent 70%);border-radius:50%}
-        .lbl{display:block;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:#7a9e96;margin-bottom:8px}
-        .srow{display:flex;align-items:center;gap:12px;margin-bottom:10px}
-        .snote{background:#edfaf3;border:1px solid rgba(0,66,51,.08);border-radius:12px;padding:16px 20px;font-size:12px;color:#7a9e96;line-height:1.6}
-        .errbox{background:#fef2f2;border:1px solid #fecaca;border-radius:12px;padding:16px 20px;color:#991b1b;font-size:13px;margin-bottom:24px}
-        .sec{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.1em;color:#7a9e96;padding:16px 0 8px;border-top:1px solid rgba(0,66,51,.1);margin-top:8px}
+        .side{width:280px;min-width:260px;background:white;border-right:1px solid var(--b);height:100vh;position:sticky;top:0;overflow-y:auto;padding:24px 18px;display:flex;flex-direction:column;scrollbar-width:thin;scrollbar-color:var(--mint) transparent}
+        .main{flex:1;overflow-y:auto;padding:28px 32px}
+        .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+        .hero{background:var(--f);border-radius:18px;padding:36px;color:white;position:relative;overflow:hidden;margin-bottom:18px}
+        .hero::before{content:'';position:absolute;top:-60px;right:-60px;width:220px;height:220px;background:radial-gradient(circle,rgba(213,252,233,.15) 0%,transparent 70%);border-radius:50%}
+        .lbl{display:block;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--mu);margin-bottom:7px}
+        .sec{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.1em;color:var(--mu);padding:14px 0 7px;border-top:1px solid var(--b);margin-top:6px}
+        .snote{background:var(--ms);border:1px solid rgba(0,66,51,.08);border-radius:12px;padding:14px 18px;font-size:11px;color:var(--mu);line-height:1.6;margin-top:16px;display:flex;gap:10px;align-items:flex-start}
+        .errbox{background:#fef2f2;border:1px solid #fecaca;border-radius:10px;padding:14px 18px;color:#991b1b;font-size:13px;margin-bottom:16px}
+        .warnbox{background:#fffbeb;border:1px solid #fde68a;border-radius:10px;padding:12px 16px;color:#92400e;font-size:12px;margin-bottom:14px;line-height:1.5}
         @media(max-width:860px){.layout{flex-direction:column}.side{width:100%;height:auto;position:relative}.grid{grid-template-columns:1fr}}
-        ::-webkit-scrollbar{width:6px}::-webkit-scrollbar-thumb{background:#D5FCE9;border-radius:3px}
+        ::-webkit-scrollbar{width:5px}::-webkit-scrollbar-thumb{background:var(--mint);border-radius:3px}
     </style>
 </head>
 <body>
@@ -60,107 +61,323 @@
 <script type="text/babel">
 const {useState,useCallback}=React;
 const SCB="https://api.scb.se/OV0104/v1/doris/sv/ssd/START";
-const T={pop:`${SCB}/BE/BE0101/BE0101A/BefolkningNy`,edu:`${SCB}/UF/UF0506/UF0506A/UtbSUNKonLanAr`,income:`${SCB}/HE/HE0110/HE0110A/SamForvInk1`,civil:`${SCB}/BE/BE0101/BE0101S/KonCivilstandAr`,bg:`${SCB}/BE/BE0101/BE0101Q/UtlSvBakgKonAldLan`};
-const AG=["18-19","20-24","25-29","30-34","35-39","40-44","45-49","50-54","55-59","60-64","65-69","70-74","75-79","80-84","85-89","90-94","95+"];
-const LAN=[{code:"01",name:"Stockholms län"},{code:"03",name:"Uppsala län"},{code:"04",name:"Södermanlands län"},{code:"05",name:"Östergötlands län"},{code:"06",name:"Jönköpings län"},{code:"07",name:"Kronobergs län"},{code:"08",name:"Kalmar län"},{code:"09",name:"Gotlands län"},{code:"10",name:"Blekinge län"},{code:"12",name:"Skåne län"},{code:"13",name:"Hallands län"},{code:"14",name:"Västra Götalands län"},{code:"17",name:"Värmlands län"},{code:"18",name:"Örebro län"},{code:"19",name:"Västmanlands län"},{code:"20",name:"Dalarnas län"},{code:"21",name:"Gävleborgs län"},{code:"22",name:"Västernorrlands län"},{code:"23",name:"Jämtlands län"},{code:"24",name:"Västerbottens län"},{code:"25",name:"Norrbottens län"}];
-const ML={"0180":"01","1480":"14","1280":"12","0380":"03","0580":"05","1980":"19","1283":"12","0181":"01","0581":"05","1490":"14","1281":"12","1880":"18","2480":"24","2180":"21","1380":"13"};
-const CITIES=[{code:"0180",name:"Stockholm"},{code:"1480",name:"Göteborg"},{code:"1280",name:"Malmö"},{code:"0380",name:"Uppsala"},{code:"0580",name:"Linköping"},{code:"1980",name:"Västerås"},{code:"1283",name:"Helsingborg"},{code:"0181",name:"Södertälje"},{code:"0581",name:"Norrköping"},{code:"1490",name:"Borås"},{code:"1281",name:"Lund"},{code:"1880",name:"Örebro"},{code:"2480",name:"Umeå"},{code:"2180",name:"Gävle"},{code:"1380",name:"Halmstad"}];
+
+// ── VERIFIED TABLE URLS ──────────────────────────────────────────────────────
+const URLS={
+    pop:    `${SCB}/BE/BE0101/BE0101A/BefolkningNy`,
+    edu:    `${SCB}/UF/UF0506/UF0506D/UtbSUNBefDesoRegsoN`,
+    income: `${SCB}/HE/HE0110/HE0110A/SamForvInk1`,
+    bg:     `${SCB}/BE/BE0101/BE0101Q/UtlSvBakgGrov`,
+};
+// Civilstånd hämtas via BefolkningNy (samma tabell som befolkning)
+
+// ── CONSTANTS ────────────────────────────────────────────────────────────────
+// Utbildningstabell: åldrar 25-65 fast (tabellen täcker bara den gruppen)
+// Inkomst: åldersgrupper i tabellen
+const INC_AGES=["16-19","20-64","20-65","65+","tot20","tot64","00-04","05-09","10-14","15-19","20-24","25-29","30-34","35-39","40-44","45-49","50-54","55-59","60-64","65-69","70-74","75-79","80-84","85+"];
+
+const LAN=[{c:"01",n:"Stockholms län"},{c:"03",n:"Uppsala län"},{c:"04",n:"Södermanlands län"},{c:"05",n:"Östergötlands län"},{c:"06",n:"Jönköpings län"},{c:"07",n:"Kronobergs län"},{c:"08",n:"Kalmar län"},{c:"09",n:"Gotlands län"},{c:"10",n:"Blekinge län"},{c:"12",n:"Skåne län"},{c:"13",n:"Hallands län"},{c:"14",n:"Västra Götalands län"},{c:"17",n:"Värmlands län"},{c:"18",n:"Örebro län"},{c:"19",n:"Västmanlands län"},{c:"20",n:"Dalarnas län"},{c:"21",n:"Gävleborgs län"},{c:"22",n:"Västernorrlands län"},{c:"23",n:"Jämtlands län"},{c:"24",n:"Västerbottens län"},{c:"25",n:"Norrbottens län"}];
+const CITIES=[{c:"0180",n:"Stockholm"},{c:"1480",n:"Göteborg"},{c:"1280",n:"Malmö"},{c:"0380",n:"Uppsala"},{c:"0580",n:"Linköping"},{c:"1980",n:"Västerås"},{c:"1283",n:"Helsingborg"},{c:"0181",n:"Södertälje"},{c:"0581",n:"Norrköping"},{c:"1490",n:"Borås"},{c:"1281",n:"Lund"},{c:"1880",n:"Örebro"},{c:"2480",n:"Umeå"},{c:"2180",n:"Gävle"},{c:"1380",n:"Halmstad"}];
 const ALL=[...CITIES,...LAN];
-const lanOf=c=>c.length===2?c:ML[c]||c.slice(0,2);
-const agroups=(s,e)=>AG.filter(g=>{const[lo,hi]=g.includes('+')?[parseInt(g),99]:g.split('-').map(Number);return lo<=e&&hi>=s;});
+
 const pct=(a,t)=>t>0?Math.round(a/t*100):0;
-async function scb(url,q){const r=await fetch(url,{method:'POST',body:JSON.stringify(q)});if(!r.ok)throw new Error(r.status);return r.json();}
-const Svg={Target:()=><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>,Down:()=><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>,Arr:()=><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m9 18 6-6-6-6"/></svg>,Bar:()=><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M3 3v18h18"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></svg>,Wallet:()=><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1"/><path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4"/></svg>,Grad:()=><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c0 2 2 3 6 3s6-1 6-3v-5"/></svg>,Heart:()=><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>,Users:()=><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>,Info:()=><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>};
-function Badge({live}){return live?<span className="blive"><span className="dot"/><span>SCB Live</span></span>:<span className="best">Estimat</span>;}
-function BarRow({label,value,color='#004233'}){return(<div className="srow"><span style={{fontSize:13,color:'#7a9e96',flex:1,whiteSpace:'nowrap'}}>{label}</span><div style={{flex:2,height:6,background:'#D5FCE9',borderRadius:3,overflow:'hidden'}}><div className="bar" style={{'--w':`${value}%`,background:color}}/></div><span style={{fontFamily:'DM Mono,monospace',fontSize:13,fontWeight:500,color:'#004233',minWidth:40,textAlign:'right'}}>{value}%</span></div>);}
-function Card({icon:Icon,title,live,delay,main,sub,children}){return(<div className={`card fu ${delay}`}><div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:18}}><div style={{display:'flex',alignItems:'center',gap:10}}><div style={{width:32,height:32,background:'#edfaf3',borderRadius:8,display:'flex',alignItems:'center',justifyContent:'center',color:'#004233'}}><Icon/></div><span style={{fontSize:12,fontWeight:600,textTransform:'uppercase',letterSpacing:'.08em',color:'#7a9e96'}}>{title}</span></div><Badge live={live}/></div>{main&&<div style={{marginBottom:20,paddingBottom:16,borderBottom:'1px solid rgba(0,66,51,.1)'}}><div style={{fontSize:28,fontWeight:700,letterSpacing:'-.02em',color:'#004233',fontFamily:'DM Mono,monospace'}}>{main}</div>{sub&&<div style={{fontSize:11,color:'#7a9e96',marginTop:2}}>{sub}</div>}</div>}{children}</div>);}
+async function scb(url,q){
+    const r=await fetch(url,{method:'POST',body:JSON.stringify(q)});
+    if(!r.ok){const t=await r.text();throw new Error(`HTTP ${r.status}: ${t.slice(0,200)}`);}
+    return r.json();
+}
+
+// ── ICONS ────────────────────────────────────────────────────────────────────
+const ITarget=()=><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>;
+const IDown=()=><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>;
+const IArr=()=><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m9 18 6-6-6-6"/></svg>;
+const IBar=()=><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M3 3v18h18"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></svg>;
+const IWallet=()=><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1"/><path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4"/></svg>;
+const IGrad=()=><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c0 2 2 3 6 3s6-1 6-3v-5"/></svg>;
+const IHeart=()=><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>;
+const IUsers=()=><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>;
+const IInfo=()=><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>;
+
+function BarRow({label,value,color='#004233'}){return(
+    <div style={{display:'flex',alignItems:'center',gap:10,marginBottom:9}}>
+        <span style={{fontSize:12,color:'#7a9e96',flex:1,whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis'}}>{label}</span>
+        <div style={{flex:2,height:5,background:'#D5FCE9',borderRadius:3,overflow:'hidden'}}>
+            <div className="bar" style={{'--w':`${value}%`,background:color}}/>
+        </div>
+        <span style={{fontFamily:'DM Mono,monospace',fontSize:12,fontWeight:500,color:'#004233',minWidth:36,textAlign:'right'}}>{value}%</span>
+    </div>
+);}
+
+function Card({icon:Icon,title,delay,main,sub,note,children}){return(
+    <div className={`card fu ${delay}`}>
+        <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:16}}>
+            <div style={{display:'flex',alignItems:'center',gap:8}}>
+                <div style={{width:28,height:28,background:'#edfaf3',borderRadius:7,display:'flex',alignItems:'center',justifyContent:'center',color:'#004233'}}><Icon/></div>
+                <span style={{fontSize:10,fontWeight:600,textTransform:'uppercase',letterSpacing:'.08em',color:'#7a9e96'}}>{title}</span>
+            </div>
+            <span className="live"><span className="dot"/>SCB Live</span>
+        </div>
+        {main&&<div style={{marginBottom:16,paddingBottom:14,borderBottom:'1px solid rgba(0,66,51,.08)'}}>
+            <div style={{fontSize:26,fontWeight:700,letterSpacing:'-.02em',color:'#004233',fontFamily:'DM Mono,monospace'}}>{main}</div>
+            {sub&&<div style={{fontSize:11,color:'#7a9e96',marginTop:2}}>{sub}</div>}
+        </div>}
+        {children}
+        {note&&<div style={{marginTop:10,fontSize:10,color:'#7a9e96',fontStyle:'italic'}}>{note}</div>}
+    </div>
+);}
+
 function App(){
     const [loading,setLoading]=useState(false);
     const [msg,setMsg]=useState('');
     const [err,setErr]=useState(null);
+    const [warns,setWarns]=useState([]);
     const [res,setRes]=useState(null);
     const [exp,setExp]=useState(false);
     const [sel,setSel]=useState({geo:'0180',g:'all',a0:25,a1:54});
     const [fi,setFi]=useState({income:true,edu:true,civil:true,bg:true});
     const tog=k=>setFi(f=>({...f,[k]:!f[k]}));
+
     const run=useCallback(async()=>{
-        setLoading(true);setErr(null);setRes(null);
+        setLoading(true);setErr(null);setRes(null);setWarns([]);
+        const w=[];
         try{
-            const geoName=ALL.find(x=>x.code===sel.geo)?.name||sel.geo;
-            const lc=lanOf(sel.geo);const isMun=sel.geo.length===4;
+            const geoName=ALL.find(x=>x.c===sel.geo)?.n||sel.geo;
+            const isMun=sel.geo.length===4;
             const ages=Array.from({length:Math.max(0,sel.a1-sel.a0+1)},(_,i)=>(sel.a0+i).toString());
             const gv=sel.g==='all'?['1','2']:[sel.g];
-            const ag=agroups(sel.a0,sel.a1);
+
+            // ── 1. BEFOLKNING (bastal) ──────────────────────────────────────
             setMsg('Hämtar befolkningsdata…');
-            const pd=await scb(T.pop,{query:[{code:'Region',selection:{filter:'item',values:[sel.geo]}},{code:'Kon',selection:{filter:'item',values:gv}},{code:'Alder',selection:{filter:'item',values:ages}},{code:'ContentsCode',selection:{filter:'item',values:['BE0101N1']}},{code:'Tid',selection:{filter:'item',values:['2023']}}],response:{format:'json'}});
+            const pd=await scb(URLS.pop,{
+                query:[
+                    {code:'Region',selection:{filter:'item',values:[sel.geo]}},
+                    {code:'Civilstand',selection:{filter:'item',values:['OG','G','SK','ÄNKL']}},
+                    {code:'Alder',selection:{filter:'item',values:ages}},
+                    {code:'Kon',selection:{filter:'item',values:gv}},
+                    {code:'ContentsCode',selection:{filter:'item',values:['BE0101N1']}},
+                    {code:'Tid',selection:{filter:'item',values:['2024']}}
+                ],
+                response:{format:'json'}
+            });
+            // Total befolkning
             const pop=pd.data.reduce((a,r)=>a+parseInt(r.values[0]||0),0);
-            let edu=null,civil=null,bgd=null,inc=null;
-            if(fi.edu){setMsg('Hämtar utbildningsdata…');try{const d=await scb(T.edu,{query:[{code:'Lan',selection:{filter:'item',values:[lc]}},{code:'Kon',selection:{filter:'item',values:gv}},{code:'Sun2000Niva',selection:{filter:'item',values:['1','2','3','4','5']}},{code:'Tid',selection:{filter:'item',values:['2022']}}],response:{format:'json'}});const t={lo:0,mi:0,hi:0};d.data.forEach(r=>{const v=parseInt(r.values[0]||0),l=r.key[2];if(l==='1'||l==='2')t.lo+=v;else if(l==='3')t.mi+=v;else t.hi+=v;});const s=t.lo+t.mi+t.hi;edu={high:pct(t.hi,s),mid:pct(t.mi,s),low:pct(t.lo,s),live:true};}catch{edu={high:32,mid:34,low:34,live:false};}}
-            if(fi.civil){setMsg('Hämtar civilståndsdata…');try{const d=await scb(T.civil,{query:[{code:'Region',selection:{filter:'item',values:[sel.geo]}},{code:'Civilstand',selection:{filter:'item',values:['OG','G','EP','SK','ÄNKL']}},{code:'Kon',selection:{filter:'item',values:gv}},{code:'Tid',selection:{filter:'item',values:['2023']}}],response:{format:'json'}});const t={s:0,m:0,o:0};d.data.forEach(r=>{const v=parseInt(r.values[0]||0),c=r.key[1];if(c==='OG')t.s+=v;else if(c==='G')t.m+=v;else t.o+=v;});const s=t.s+t.m+t.o;civil={single:pct(t.s,s),married:pct(t.m,s),other:pct(t.o,s),live:true};}catch{civil={single:40,married:47,other:13,live:false};}}
-            if(fi.bg){setMsg('Hämtar bakgrundsdata…');try{const d=await scb(T.bg,{query:[{code:'Lan',selection:{filter:'item',values:[lc]}},{code:'Kon',selection:{filter:'item',values:gv}},{code:'Alder',selection:{filter:'item',values:ag}},{code:'UtlSvBakgrund',selection:{filter:'item',values:['SVE','UTR','SVEUTRF']}},{code:'Tid',selection:{filter:'item',values:['2023']}}],response:{format:'json'}});const t={s:0,f:0,g:0};d.data.forEach(r=>{const v=parseInt(r.values[0]||0),b=r.key[3];if(b==='SVE')t.s+=v;else if(b==='UTR')t.f+=v;else t.g+=v;});const s=t.s+t.f+t.g;bgd={swe:pct(t.s,s),for:pct(t.f,s),gen:pct(t.g,s),live:true};}catch{bgd={swe:74,for:17,gen:9,live:false};}}
-            if(fi.income){setMsg('Hämtar inkomstdata…');try{const d=await scb(T.income,{query:[{code:'Region',selection:{filter:'item',values:[sel.geo]}},{code:'Kon',selection:{filter:'item',values:gv}},{code:'Tid',selection:{filter:'item',values:['2022']}}],response:{format:'json'}});let tot=0,cnt=0;d.data.forEach(r=>{const v=parseInt(r.values[0]||0);if(v>0){tot+=v;cnt++;}});const avg=cnt>0?Math.round(tot/cnt)*1000:380000;const hi=avg>450000?28:avg>380000?20:13,lo=avg>450000?15:avg>380000?22:30;inc={avg,high:hi,mid:100-hi-lo,low:lo,live:true};}catch{inc={avg:390000,high:18,mid:57,low:25,live:false};}}
+            
+            // ── 1b. CIVILSTÅND ur samma svar ───────────────────────────────
+            let civil=null;
+            if(fi.civil){
+                const t={og:0,g:0,sk:0,ankl:0};
+                pd.data.forEach(r=>{
+                    const cs=r.key[1],v=parseInt(r.values[0]||0);
+                    if(cs==='OG')t.og+=v;
+                    else if(cs==='G')t.g+=v;
+                    else if(cs==='SK')t.sk+=v;
+                    else if(cs==='ÄNKL')t.ankl+=v;
+                });
+                const tot=t.og+t.g+t.sk+t.ankl;
+                civil={single:pct(t.og,tot),married:pct(t.g,tot),other:pct(t.sk+t.ankl,tot)};
+            }
+
+            // ── 2. UTBILDNING ───────────────────────────────────────────────
+            // OBS: tabellen täcker 25–65 år och har bara år 2024
+            let edu=null;
+            if(fi.edu){
+                setMsg('Hämtar utbildningsdata…');
+                // Utbildningsniva: 2=förgymnasial, 3=gymnasial, 4=eftergymn<3år, 5=eftergymn≥3år, 6=forskarutb
+                const d=await scb(URLS.edu,{
+                    query:[
+                        {code:'Region',selection:{filter:'item',values:[sel.geo]}},
+                        {code:'Utbildningsniva',selection:{filter:'item',values:['2','3','4','5','6']}},
+                        {code:'ContentsCode',selection:{filter:'item',values:['000007Z6']}},
+                        {code:'Tid',selection:{filter:'item',values:['2024']}}
+                    ],
+                    response:{format:'json'}
+                });
+                const t={lo:0,mi:0,hi:0};
+                d.data.forEach(r=>{
+                    const v=parseInt(r.values[0]||0),l=r.key[1];
+                    if(l==='2'||l==='3')t.lo+=v;
+                    else if(l==='4')t.mi+=v;
+                    else t.hi+=v; // 5+6
+                });
+                const s=t.lo+t.mi+t.hi;
+                edu={high:pct(t.hi,s),mid:pct(t.mi,s),low:pct(t.lo,s)};
+                if(sel.a0<25||sel.a1>65) w.push('Utbildningsdata täcker åldersgruppen 25–65 år oavsett valt intervall.');
+            }
+
+            // ── 3. BAKGRUND ─────────────────────────────────────────────────
+            // UtlBakgrund: 1=utländsk bakgrund, 2=svensk bakgrund
+            let bgd=null;
+            if(fi.bg){
+                setMsg('Hämtar bakgrundsdata…');
+                // Åldrar i denna tabell är enskilda år 0-100+
+                const bgAges=ages.map(a=>parseInt(a)>100?'100+':a).filter((v,i,a)=>a.indexOf(v)===i);
+                const d=await scb(URLS.bg,{
+                    query:[
+                        {code:'Region',selection:{filter:'item',values:[sel.geo]}},
+                        {code:'UtlBakgrund',selection:{filter:'item',values:['1','2']}},
+                        {code:'Alder',selection:{filter:'item',values:bgAges}},
+                        {code:'Kon',selection:{filter:'item',values:gv}},
+                        {code:'ContentsCode',selection:{filter:'item',values:['000001NJ']}},
+                        {code:'Tid',selection:{filter:'item',values:['2024']}}
+                    ],
+                    response:{format:'json'}
+                });
+                const t={sv:0,utl:0};
+                d.data.forEach(r=>{
+                    const v=parseInt(r.values[0]||0),b=r.key[1];
+                    if(b==='2')t.sv+=v; else t.utl+=v;
+                });
+                const s=t.sv+t.utl;
+                bgd={swe:pct(t.sv,s),foreign:pct(t.utl,s)};
+            }
+
+            // ── 4. INKOMST ──────────────────────────────────────────────────
+            // Hämtar medelinkomst (HE011037) per region och kön
+            let inc=null;
+            if(fi.income){
+                setMsg('Hämtar inkomstdata…');
+                const d=await scb(URLS.income,{
+                    query:[
+                        {code:'Region',selection:{filter:'item',values:[sel.geo]}},
+                        {code:'Kon',selection:{filter:'item',values:gv}},
+                        {code:'Alder',selection:{filter:'item',values:['20-64']}},
+                        {code:'Inkomstklass',selection:{filter:'item',values:['TOT']}},
+                        {code:'ContentsCode',selection:{filter:'item',values:['HE011037']}},
+                        {code:'Tid',selection:{filter:'item',values:['2023']}}
+                    ],
+                    response:{format:'json'}
+                });
+                let tot=0,cnt=0;
+                d.data.forEach(r=>{const v=parseInt(r.values[0]||0);if(v>0){tot+=v;cnt++;}});
+                if(cnt>0){
+                    const avg=Math.round(tot/cnt)*1000;
+                    // Hämta fördelning per inkomstklass
+                    const d2=await scb(URLS.income,{
+                        query:[
+                            {code:'Region',selection:{filter:'item',values:[sel.geo]}},
+                            {code:'Kon',selection:{filter:'item',values:gv}},
+                            {code:'Alder',selection:{filter:'item',values:['20-64']}},
+                            {code:'Inkomstklass',selection:{filter:'item',values:['0','1-19','20-39','40-59','60-79','80-99','100-149','150-199','200-299','300-399','400-499','500-599','600-799','800-999','1000+']}},
+                            {code:'ContentsCode',selection:{filter:'item',values:['HE011038']}},
+                            {code:'Tid',selection:{filter:'item',values:['2023']}}
+                        ],
+                        response:{format:'json'}
+                    });
+                    let low=0,mid=0,high=0,tot2=0;
+                    d2.data.forEach(r=>{
+                        const v=parseInt(r.values[0]||0),k=r.key[3];
+                        tot2+=v;
+                        // <250k = låg, 250-600k = medel, >600k = hög
+                        const tkr={'0':0,'1-19':10,'20-39':30,'40-59':50,'60-79':70,'80-99':90,'100-149':125,'150-199':175,'200-299':250,'300-399':350,'400-499':450,'500-599':550,'600-799':700,'800-999':900,'1000+':1000};
+                        const midVal=tkr[k]||0;
+                        if(midVal*1000<250000)low+=v;
+                        else if(midVal*1000<600000)mid+=v;
+                        else high+=v;
+                    });
+                    inc={avg,high:pct(high,tot2),mid:pct(mid,tot2),low:pct(low,tot2)};
+                    if(sel.a0<20||sel.a1>64) w.push('Inkomstdata täcker åldersgruppen 20–64 år.');
+                }
+            }
+
+            setWarns(w);
             setRes({pop,geoName,isMun,genderLabel:sel.g==='all'?'Alla kön':sel.g==='1'?'Män':'Kvinnor',ageRange:`${sel.a0}–${sel.a1}`,ts:new Date().toLocaleString('sv-SE'),inc,edu,civil,bgd});
-        }catch(e){setErr('Kunde inte hämta data från SCB. Kontrollera anslutningen och försök igen.');}
-        finally{setLoading(false);setMsg('');}
+        }catch(e){
+            setErr(`Fel: ${e.message}`);
+        }finally{setLoading(false);setMsg('');}
     },[sel,fi]);
-    const dl=()=>{if(!res)return;setExp(true);const rows=[['MEDIAPRO AUDIENCE INTELLIGENCE REPORT'],['Skapad',res.ts],['Område',res.geoName],['Demografi',`${res.genderLabel}, ${res.ageRange} år`],['Total population',res.pop],['']];if(res.inc){rows.push(['INKOMST'],['Genomsnittlig inkomst',res.inc.avg,'SEK/år'],['Höginkomst',res.inc.high,'%'],['Medelinkomst',res.inc.mid,'%'],['Låginkomst',res.inc.low,'%'],['']);}if(res.edu){rows.push(['UTBILDNING'],['Eftergymnasial 3+ år',res.edu.high,'%'],['Kortare högskoleutb.',res.edu.mid,'%'],['Gymnasial/Förgymnasial',res.edu.low,'%'],['']);}if(res.civil){rows.push(['CIVILSTÅND'],['Ogifta',res.civil.single,'%'],['Gifta',res.civil.married,'%'],['Övriga',res.civil.other,'%'],['']);}if(res.bgd){rows.push(['BAKGRUND'],['Svensk bakgrund',res.bgd.swe,'%'],['Utrikes född',res.bgd.for,'%'],['Andra generationen',res.bgd.gen,'%']);}const csv=rows.map(r=>r.join(';')).join('\n');const a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8'}));a.download=`MediaPro_${res.geoName.replace(/\s/g,'_')}.csv`;a.click();setTimeout(()=>setExp(false),1000);};
+
+    const dl=()=>{
+        if(!res)return;setExp(true);
+        const rows=[['MEDIAPRO AUDIENCE INTELLIGENCE REPORT'],['Skapad',res.ts],['Område',res.geoName],['Demografi',`${res.genderLabel}, ${res.ageRange} år`],['Total population',res.pop],['']];
+        if(res.inc){rows.push(['INKOMST (20-64 år, SCB 2023)'],['Medelinkomst',res.inc.avg,'SEK/år'],['Höginkomst (>600k)',res.inc.high,'%'],['Medelinkomst (250-600k)',res.inc.mid,'%'],['Låginkomst (<250k)',res.inc.low,'%'],['']);}
+        if(res.edu){rows.push(['UTBILDNING (25-65 år, SCB 2024)'],['Eftergymnasial 3+ år',res.edu.high,'%'],['Kortare högskoleutb.',res.edu.mid,'%'],['Gymnasial/Förgymnasial',res.edu.low,'%'],['']);}
+        if(res.civil){rows.push(['CIVILSTÅND (SCB 2024)'],['Ogifta',res.civil.single,'%'],['Gifta',res.civil.married,'%'],['Skilda/Änkor/Änklingar',res.civil.other,'%'],['']);}
+        if(res.bgd){rows.push(['BAKGRUND (SCB 2024)'],['Svensk bakgrund',res.bgd.swe,'%'],['Utländsk bakgrund',res.bgd.foreign,'%']);}
+        const csv=rows.map(r=>r.join(';')).join('\n');
+        const a=document.createElement('a');
+        a.href=URL.createObjectURL(new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8'}));
+        a.download=`MediaPro_${res.geoName.replace(/\s/g,'_')}.csv`;a.click();
+        setTimeout(()=>setExp(false),1000);
+    };
+
     return(
     <div className="layout">
         <aside className="side">
-            <div style={{display:'flex',alignItems:'center',gap:10,marginBottom:28,paddingBottom:20,borderBottom:'1px solid rgba(0,66,51,.1)'}}>
-                <div style={{width:32,height:32,background:'#004233',borderRadius:8,display:'flex',alignItems:'center',justifyContent:'center',color:'white'}}><Svg.Target/></div>
-                <div><div style={{fontSize:15,fontWeight:700,letterSpacing:'-.02em'}}>MediaPro</div><div style={{fontSize:10,color:'#7a9e96',letterSpacing:'.06em',textTransform:'uppercase'}}>Audience Intelligence</div></div>
+            <div style={{display:'flex',alignItems:'center',gap:9,marginBottom:22,paddingBottom:18,borderBottom:'1px solid rgba(0,66,51,.1)'}}>
+                <div style={{width:28,height:28,background:'#004233',borderRadius:7,display:'flex',alignItems:'center',justifyContent:'center',color:'white'}}><ITarget/></div>
+                <div><div style={{fontSize:14,fontWeight:700,letterSpacing:'-.02em'}}>MediaPro</div><div style={{fontSize:9,color:'#7a9e96',letterSpacing:'.06em',textTransform:'uppercase'}}>Audience Intelligence</div></div>
             </div>
-            <div style={{marginBottom:14}}>
+            <div style={{marginBottom:12}}>
                 <label className="lbl">Geografiskt område</label>
                 <select className="inp" value={sel.geo} onChange={e=>setSel({...sel,geo:e.target.value})}>
-                    <optgroup label="Städer">{CITIES.map(c=><option key={c.code} value={c.code}>{c.name}</option>)}</optgroup>
-                    <optgroup label="Län">{LAN.map(l=><option key={l.code} value={l.code}>{l.name}</option>)}</optgroup>
+                    <optgroup label="Städer">{CITIES.map(c=><option key={c.c} value={c.c}>{c.n}</option>)}</optgroup>
+                    <optgroup label="Län">{LAN.map(l=><option key={l.c} value={l.c}>{l.n}</option>)}</optgroup>
                 </select>
-                {sel.geo.length===4&&<div style={{marginTop:5,fontSize:11,color:'#7a9e96'}}>Demografisk data hämtas på länsnivå</div>}
             </div>
-            <div style={{marginBottom:14}}>
+            <div style={{marginBottom:12}}>
                 <label className="lbl">Åldersintervall</label>
-                <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:8}}>
-                    <div><div style={{fontSize:11,color:'#7a9e96',marginBottom:4}}>Från</div><input type="number" className="inp" style={{textAlign:'center'}} min={0} max={99} value={sel.a0} onChange={e=>setSel({...sel,a0:parseInt(e.target.value)||0})}/></div>
-                    <div><div style={{fontSize:11,color:'#7a9e96',marginBottom:4}}>Till</div><input type="number" className="inp" style={{textAlign:'center'}} min={0} max={99} value={sel.a1} onChange={e=>setSel({...sel,a1:parseInt(e.target.value)||0})}/></div>
+                <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:7}}>
+                    <div><div style={{fontSize:10,color:'#7a9e96',marginBottom:3}}>Från</div><input type="number" className="inp" min={0} max={99} value={sel.a0} onChange={e=>setSel({...sel,a0:parseInt(e.target.value)||0})}/></div>
+                    <div><div style={{fontSize:10,color:'#7a9e96',marginBottom:3}}>Till</div><input type="number" className="inp" min={0} max={99} value={sel.a1} onChange={e=>setSel({...sel,a1:parseInt(e.target.value)||0})}/></div>
                 </div>
             </div>
-            <div style={{marginBottom:20}}>
+            <div style={{marginBottom:18}}>
                 <label className="lbl">Kön</label>
-                <div style={{display:'flex',gap:6}}>{[['2','Kvinna'],['1','Man'],['all','Alla']].map(([v,l])=><div key={v} className={`pill${sel.g===v?' on':''}`} onClick={()=>setSel({...sel,g:v})}>{l}</div>)}</div>
+                <div style={{display:'flex',gap:5}}>{[['2','Kvinna'],['1','Man'],['all','Alla']].map(([v,l])=><div key={v} className={`pill${sel.g===v?' on':''}`} onClick={()=>setSel({...sel,g:v})}>{l}</div>)}</div>
             </div>
             <div className="sec">Datakategorier</div>
-            <div style={{marginBottom:24}}>{[['income','Inkomstnivåer'],['edu','Utbildning'],['civil','Civilstånd'],['bg','Bakgrund']].map(([k,l])=><div key={k} style={{display:'flex',alignItems:'center',justifyContent:'space-between',padding:'10px 0',borderBottom:'1px solid rgba(0,66,51,.1)'}}><span style={{fontSize:13,color:fi[k]?'#0a1f1a':'#7a9e96',fontWeight:fi[k]?500:400,transition:'color .15s'}}>{l}</span><div className={`tog${fi[k]?' on':''}`} onClick={()=>tog(k)}/></div>)}</div>
-            <button className="abtn" onClick={run} disabled={loading}>{loading?<><div className="ring" style={{width:16,height:16,borderWidth:2}}/><span>Analyserar…</span></>:<><span>Starta analys</span><Svg.Arr/></>}</button>
+            <div style={{marginBottom:20}}>{[['income','Inkomstnivåer'],['edu','Utbildning'],['civil','Civilstånd'],['bg','Bakgrund']].map(([k,l])=><div key={k} style={{display:'flex',alignItems:'center',justifyContent:'space-between',padding:'9px 0',borderBottom:'1px solid rgba(0,66,51,.08)'}}><span style={{fontSize:13,color:fi[k]?'#0a1f1a':'#7a9e96',fontWeight:fi[k]?500:400}}>{l}</span><div className={`tog${fi[k]?' on':''}`} onClick={()=>tog(k)}/></div>)}</div>
+            <button className="abtn" onClick={run} disabled={loading}>{loading?<><div className="ring" style={{width:15,height:15,borderWidth:2}}/><span>Analyserar…</span></>:<><span>Starta analys</span><IArr/></>}</button>
             <div style={{flex:1}}/>
-            <div style={{marginTop:24,paddingTop:16,borderTop:'1px solid rgba(0,66,51,.1)',fontSize:10,color:'#7a9e96',letterSpacing:'.06em',textTransform:'uppercase',textAlign:'center'}}>v5.1 · SCB API 2023</div>
+            <div style={{marginTop:20,paddingTop:14,borderTop:'1px solid rgba(0,66,51,.1)',fontSize:9,color:'#7a9e96',letterSpacing:'.06em',textTransform:'uppercase',textAlign:'center'}}>v6.0 · SCB API 2024</div>
         </aside>
+
         <main className="main">
-            <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:28}}>
-                <div><h1 style={{fontSize:20,fontWeight:700,letterSpacing:'-.02em'}}>{res?`${res.geoName}, ${res.ageRange} år`:'Välj urval för analys'}</h1>{res&&<div style={{fontSize:12,color:'#7a9e96',marginTop:2}}>{res.genderLabel} · Uppdaterad {res.ts}</div>}</div>
-                <button className="ebtn" onClick={dl} disabled={!res||exp}>{exp?<div className="ring" style={{width:14,height:14,borderWidth:2}}/>:<Svg.Down/>}{exp?'Exporterar…':'Ladda ner CSV'}</button>
+            <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:22}}>
+                <div>
+                    <h1 style={{fontSize:18,fontWeight:700,letterSpacing:'-.02em'}}>{res?`${res.geoName}, ${res.ageRange} år`:'Välj urval för analys'}</h1>
+                    {res&&<div style={{fontSize:11,color:'#7a9e96',marginTop:2}}>{res.genderLabel} · Uppdaterad {res.ts}</div>}
+                </div>
+                <button className="ebtn" onClick={dl} disabled={!res||exp}>{exp?<div className="ring" style={{width:12,height:12,borderWidth:2}}/>:<IDown/>}{exp?'Exporterar…':'Ladda ner CSV'}</button>
             </div>
-            {!res&&!loading&&!err&&<div style={{minHeight:500,display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',gap:12,textAlign:'center',padding:40,opacity:.5}}><div style={{width:64,height:64,background:'#edfaf3',borderRadius:16,display:'flex',alignItems:'center',justifyContent:'center',color:'#7a9e96',marginBottom:8}}><Svg.Bar/></div><h2 style={{fontSize:16,fontWeight:600}}>Redo att analysera</h2><p style={{fontSize:13,color:'#7a9e96',maxWidth:300,lineHeight:1.6}}>Konfigurera urval i panelen och klicka på <strong>Starta analys</strong>.</p></div>}
-            {loading&&<div style={{minHeight:500,display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',gap:16}}><div className="ring" style={{width:40,height:40}}/><div style={{fontSize:12,color:'#7a9e96',letterSpacing:'.06em',textTransform:'uppercase'}}>{msg}</div></div>}
+
+            {warns.length>0&&<div className="warnbox">⚠️ {warns.join(' ')}</div>}
+            {!res&&!loading&&!err&&<div style={{minHeight:460,display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',gap:10,textAlign:'center',opacity:.4}}><div style={{width:56,height:56,background:'#edfaf3',borderRadius:14,display:'flex',alignItems:'center',justifyContent:'center',color:'#7a9e96',marginBottom:6}}><IBar/></div><h2 style={{fontSize:15,fontWeight:600}}>Redo att analysera</h2><p style={{fontSize:12,color:'#7a9e96',maxWidth:260,lineHeight:1.6}}>Konfigurera urval och klicka på <strong>Starta analys</strong>.</p></div>}
+            {loading&&<div style={{minHeight:460,display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',gap:14}}><div className="ring" style={{width:36,height:36}}/><div style={{fontSize:11,color:'#7a9e96',letterSpacing:'.06em',textTransform:'uppercase'}}>{msg}</div></div>}
             {err&&!loading&&<div className="errbox"><strong>Fel:</strong> {err}</div>}
+
             {res&&!loading&&<div>
-                <div className="hero fu fu1" style={{marginBottom:24}}>
+                <div className="hero fu fu1">
                     <div style={{position:'relative',zIndex:1}}>
-                        <div style={{fontSize:11,fontWeight:600,letterSpacing:'.1em',textTransform:'uppercase',opacity:.5,marginBottom:8,display:'flex',alignItems:'center',gap:6}}><span className="dot" style={{background:'#a7f3d0'}}/>Total population i segmentet · SCB 2023</div>
-                        <div style={{fontSize:56,fontWeight:700,letterSpacing:'-.03em',lineHeight:1,marginBottom:20,fontFamily:'DM Mono,monospace'}}>{res.pop.toLocaleString('sv-SE')}</div>
-                        <div style={{display:'flex',flexWrap:'wrap',gap:8}}>{[res.geoName,res.genderLabel,`${res.ageRange} år`].map(t=><span key={t} style={{background:'rgba(255,255,255,.12)',border:'1px solid rgba(255,255,255,.15)',borderRadius:99,padding:'4px 12px',fontSize:12,fontWeight:500}}>{t}</span>)}</div>
+                        <div style={{fontSize:10,fontWeight:600,letterSpacing:'.1em',textTransform:'uppercase',opacity:.5,marginBottom:6,display:'flex',alignItems:'center',gap:5}}><span className="dot" style={{background:'#a7f3d0'}}/>Total population i segmentet · SCB 2024</div>
+                        <div style={{fontSize:50,fontWeight:700,letterSpacing:'-.03em',lineHeight:1,marginBottom:16,fontFamily:'DM Mono,monospace'}}>{res.pop.toLocaleString('sv-SE')}</div>
+                        <div style={{display:'flex',flexWrap:'wrap',gap:7}}>{[res.geoName,res.genderLabel,`${res.ageRange} år`].map(t=><span key={t} style={{background:'rgba(255,255,255,.12)',border:'1px solid rgba(255,255,255,.15)',borderRadius:99,padding:'3px 11px',fontSize:11,fontWeight:500}}>{t}</span>)}</div>
                     </div>
                 </div>
                 <div className="grid">
-                    {res.inc&&<Card icon={Svg.Wallet} title="Inkomst" live={res.inc.live} delay="fu2" main={`${Math.floor(res.inc.avg/1000)} tkr/år`} sub="Genomsnittlig inkomst"><BarRow label="Höginkomst" value={res.inc.high}/><BarRow label="Medelinkomst" value={res.inc.mid} color="#006650"/><BarRow label="Låginkomst" value={res.inc.low} color="#7a9e96"/></Card>}
-                    {res.edu&&<Card icon={Svg.Grad} title="Utbildning" live={res.edu.live} delay="fu3"><BarRow label="Eftergymnasial 3+ år" value={res.edu.high}/><BarRow label="Kortare högskoleutb." value={res.edu.mid} color="#006650"/><BarRow label="Gymnasial / Förgymnasial" value={res.edu.low} color="#7a9e96"/></Card>}
-                    {res.civil&&<Card icon={Svg.Heart} title="Civilstånd" live={res.civil.live} delay="fu4"><BarRow label="Ogifta" value={res.civil.single}/><BarRow label="Gifta" value={res.civil.married} color="#006650"/><BarRow label="Övriga" value={res.civil.other} color="#7a9e96"/></Card>}
-                    {res.bgd&&<Card icon={Svg.Users} title="Bakgrund" live={res.bgd.live} delay="fu5"><BarRow label="Svensk bakgrund" value={res.bgd.swe}/><BarRow label="Utrikes född" value={res.bgd.for} color="#006650"/><BarRow label="Andra generationen" value={res.bgd.gen} color="#7a9e96"/></Card>}
+                    {res.inc&&<Card icon={IWallet} title="Inkomst" delay="fu2" main={`${Math.floor(res.inc.avg/1000)} tkr/år`} sub="Medelinkomst 20–64 år · SCB 2023">
+                        <BarRow label="Höginkomst (>600k)" value={res.inc.high}/>
+                        <BarRow label="Medelinkomst (250–600k)" value={res.inc.mid} color="#006650"/>
+                        <BarRow label="Låginkomst (<250k)" value={res.inc.low} color="#7a9e96"/>
+                    </Card>}
+                    {res.edu&&<Card icon={IGrad} title="Utbildning" delay="fu3" note="25–65 år · SCB 2024">
+                        <BarRow label="Eftergymnasial 3+ år" value={res.edu.high}/>
+                        <BarRow label="Kortare högskoleutb." value={res.edu.mid} color="#006650"/>
+                        <BarRow label="Gymnasial / Förgymnasial" value={res.edu.low} color="#7a9e96"/>
+                    </Card>}
+                    {res.civil&&<Card icon={IHeart} title="Civilstånd" delay="fu4" note="SCB 2024">
+                        <BarRow label="Ogifta" value={res.civil.single}/>
+                        <BarRow label="Gifta" value={res.civil.married} color="#006650"/>
+                        <BarRow label="Skilda / Änkor / Änklingar" value={res.civil.other} color="#7a9e96"/>
+                    </Card>}
+                    {res.bgd&&<Card icon={IUsers} title="Bakgrund" delay="fu5" note="SCB 2024">
+                        <BarRow label="Svensk bakgrund" value={res.bgd.swe}/>
+                        <BarRow label="Utländsk bakgrund" value={res.bgd.foreign} color="#006650"/>
+                    </Card>}
                 </div>
-                <div className="snote fu fu6" style={{marginTop:20,display:'flex',gap:12,alignItems:'flex-start'}}>
-                    <div style={{marginTop:1,color:'#7a9e96',flexShrink:0}}><Svg.Info/></div>
-                    <div><span className="blive"><span className="dot"/>SCB Live</span> data hämtas direkt från Statistiska centralbyrån. <span className="best">Estimat</span>-värden baseras på regionala demografiska mönster. Befolkning och civilstånd: 2023. Utbildning och bakgrund: 2022–2023.{res.isMun?' Viss statistik visas på länsnivå då kommunuppdelad data ej är tillgänglig.':''}</div>
+                <div className="snote fu fu6">
+                    <div style={{color:'#7a9e96',flexShrink:0,marginTop:1}}><IInfo/></div>
+                    <div>All data hämtas direkt från <strong>Statistiska centralbyrån (SCB)</strong>. Befolkning, civilstånd, utbildning och bakgrund: 2024. Inkomst: 2023. Utbildning gäller åldersgruppen 25–65 år. Inkomst gäller 20–64 år.</div>
                 </div>
             </div>}
         </main>
