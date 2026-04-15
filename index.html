@@ -65,7 +65,7 @@ const URLS={
     // BefolkningNy: region, civilstand, alder, kon — används för pop + civilstånd
     pop:    `${SCB}/BE/BE0101/BE0101A/BefolkningNy`,
     // Utbildning: region, kon, alder(grupper), UtbildningsNiva — 16-74 år, 2019-2024
-    edu:    `${SCB}/UF/UF0506/UF0506B/UtbSUNBefN`,
+    edu:    `${SCB}/UF/UF0506/UF0506B/UtbBefRegionR`,
     // Bakgrund grov: region, UtlBakgrund(1=utl,2=sv), alder, kon
     bg:     `${SCB}/BE/BE0101/BE0101Q/UtlSvBakgGrov`,
     // Inkomst: region, kon, alder, inkomstklass
@@ -166,31 +166,28 @@ function App(){
                 civil={single:pct(t.og,tot),married:pct(t.g,tot),other:pct(t.other,tot)};
             }
 
-            // ── 3. UTBILDNING via UF0506B/UtbSUNBefN ──────────────────────────────────
-            // Åldersgrupper: 16-24, 25-34, 35-44, 45-54, 55-64, 65-74
+            // ── 3. UTBILDNING via UF0506B/UtbBefRegionR ─────────────────────────────────
+            // Region+UtbildningsNiva+Alder(enskilda 16-95)+Kon, år 2008-2024
             // UtbildningsNiva koder: 1(<9år),2(förg),3(gymn≤2),4(gymn3),5(efterg<3),6(efterg≥3),7(forskar)
             let edu=null;
             if(fi.edu){
                 setMsg('Hämtar utbildningsdata…');
-                const eduGroups=['16-24','25-34','35-44','45-54','55-64','65-74'];
-                const matchedGroups=eduGroups.filter(g=>{
-                    const[lo,hi]=g.split('-').map(Number);
-                    return lo<=sel.a1&&hi>=sel.a0;
-                });
-                const useGroups=matchedGroups.length>0?matchedGroups:['25-34','35-44','45-54'];
+                // UtbBefRegionR tar enskilda åldrar 16-95
+                const useGroups=ages.filter(a=>parseInt(a)>=16&&parseInt(a)<=95);
+                if(useGroups.length===0) useGroups.push(...['25','30','35','40','45','50']);
                 const d=await scb(URLS.edu,{
                     query:[
                         {code:'Region',selection:{filter:'item',values:[sel.geo]}},
-                        {code:'Kon',selection:{filter:'item',values:gv}},
-                        {code:'Alder',selection:{filter:'item',values:useGroups}},
                         {code:'UtbildningsNiva',selection:{filter:'item',values:['1','2','3','4','5','6','7']}},
+                        {code:'Alder',selection:{filter:'item',values:useGroups}},
+                        {code:'Kon',selection:{filter:'item',values:gv}},
                         {code:'Tid',selection:{filter:'item',values:['2024']}}
                     ],
                     response:{format:'json'}
                 });
                 const t={lo:0,mi:0,hi:0};
                 d.data.forEach(r=>{
-                    const v=parseInt(r.values[0]||0),l=r.key[3];
+                    const v=parseInt(r.values[0]||0),l=r.key[1];
                     if(['1','2','3','4'].includes(l))t.lo+=v;
                     else if(l==='5')t.mi+=v;
                     else t.hi+=v;
@@ -330,7 +327,7 @@ function App(){
             <div style={{marginBottom:20}}>{[['income','Inkomstnivåer'],['edu','Utbildning'],['civil','Civilstånd'],['bg','Bakgrund']].map(([k,l])=><div key={k} style={{display:'flex',alignItems:'center',justifyContent:'space-between',padding:'9px 0',borderBottom:'1px solid rgba(0,66,51,.08)'}}><span style={{fontSize:13,color:fi[k]?'#0a1f1a':'#7a9e96',fontWeight:fi[k]?500:400}}>{l}</span><div className={`tog${fi[k]?' on':''}`} onClick={()=>tog(k)}/></div>)}</div>
             <button className="abtn" onClick={run} disabled={loading}>{loading?<><div className="ring" style={{width:15,height:15,borderWidth:2}}/><span>Analyserar…</span></>:<><span>Starta analys</span><IArr/></>}</button>
             <div style={{flex:1}}/>
-            <div style={{marginTop:20,paddingTop:14,borderTop:'1px solid rgba(0,66,51,.1)',fontSize:9,color:'#7a9e96',letterSpacing:'.06em',textTransform:'uppercase',textAlign:'center'}}>v6.2 · SCB API 2024</div>
+            <div style={{marginTop:20,paddingTop:14,borderTop:'1px solid rgba(0,66,51,.1)',fontSize:9,color:'#7a9e96',letterSpacing:'.06em',textTransform:'uppercase',textAlign:'center'}}>v6.3 · SCB API 2024</div>
         </aside>
 
         <main className="main">
