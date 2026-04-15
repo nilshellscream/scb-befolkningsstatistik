@@ -223,24 +223,26 @@ function App(){
             }
 
             // ── 5. INKOMST via SamForvInk1 ─────────────────────────────────
-            // Hämtar medelinkomst (HE011037) och antal per inkomstklass (HE011038)
+            // OBS: Kon i denna tabell är "1"=män, "2"=kvinnor, "+2"=totalt
             let inc=null;
             if(fi.income){
                 setMsg('Hämtar inkomstdata…');
-                // Åldersgrupper i inkomsttabellen — hitta de som överlappar
-                const incAgeMap=['16-19','20-24','25-29','30-34','35-39','40-44','45-49','50-54','55-59','60-64','65-69','70-74','75-79','80-84','85+'];
-                const a0=sel.a0,a1=sel.a1;
-                const matchedAges=incAgeMap.filter(g=>{
-                    const[lo,hi]=g.includes('+')?[parseInt(g),999]:g.split('-').map(Number);
-                    return lo<=a1&&hi>=a0;
-                });
-                const useAges=matchedAges.length>0?matchedAges:['20-64'];
+                const incKon = sel.g==='all' ? ['+2'] : [sel.g];
+                const incAgeMap=[
+                    {g:'16-19',lo:16,hi:19},{g:'20-24',lo:20,hi:24},{g:'25-29',lo:25,hi:29},
+                    {g:'30-34',lo:30,hi:34},{g:'35-39',lo:35,hi:39},{g:'40-44',lo:40,hi:44},
+                    {g:'45-49',lo:45,hi:49},{g:'50-54',lo:50,hi:54},{g:'55-59',lo:55,hi:59},
+                    {g:'60-64',lo:60,hi:64},{g:'65-69',lo:65,hi:69},{g:'70-74',lo:70,hi:74},
+                    {g:'75-79',lo:75,hi:79},{g:'80-84',lo:80,hi:84},{g:'85+',lo:85,hi:999}
+                ];
+                const matchedAges=incAgeMap.filter(x=>x.lo<=sel.a1&&x.hi>=sel.a0).map(x=>x.g);
+                const useAges=matchedAges.length>0?matchedAges:['25-29','30-34','35-39','40-44','45-49','50-54'];
 
-                // Medelinkomst
+                // Medelinkomst (HE011037)
                 const d=await scb(URLS.income,{
                     query:[
                         {code:'Region',selection:{filter:'item',values:[sel.geo]}},
-                        {code:'Kon',selection:{filter:'item',values:gv}},
+                        {code:'Kon',selection:{filter:'item',values:incKon}},
                         {code:'Alder',selection:{filter:'item',values:useAges}},
                         {code:'Inkomstklass',selection:{filter:'item',values:['TOT']}},
                         {code:'ContentsCode',selection:{filter:'item',values:['HE011037']}},
@@ -252,19 +254,18 @@ function App(){
                 d.data.forEach(r=>{const v=parseInt(r.values[0]||0);if(v>0){tot+=v;cnt++;}});
                 if(cnt>0){
                     const avg=Math.round(tot/cnt)*1000;
-                    // Antal per inkomstklass för fördelning
+                    // Antal per inkomstklass (HE011039J = antal personer)
                     const d2=await scb(URLS.income,{
                         query:[
                             {code:'Region',selection:{filter:'item',values:[sel.geo]}},
-                            {code:'Kon',selection:{filter:'item',values:gv}},
+                            {code:'Kon',selection:{filter:'item',values:incKon}},
                             {code:'Alder',selection:{filter:'item',values:useAges}},
                             {code:'Inkomstklass',selection:{filter:'item',values:['1-19','20-39','40-59','60-79','80-99','100-149','150-199','200-299','300-399','400-499','500-599','600-799','800-999','1000+']}},
-                            {code:'ContentsCode',selection:{filter:'item',values:['HE011038']}},
+                            {code:'ContentsCode',selection:{filter:'item',values:['HE011039J']}},
                             {code:'Tid',selection:{filter:'item',values:['2023']}}
                         ],
                         response:{format:'json'}
                     });
-                    // Gränser: <250tkr=låg, 250-600tkr=medel, >600tkr=hög
                     const MID={'1-19':10,'20-39':30,'40-59':50,'60-79':70,'80-99':90,'100-149':125,'150-199':175,'200-299':250,'300-399':350,'400-499':450,'500-599':550,'600-799':700,'800-999':900,'1000+':1000};
                     let low=0,mid=0,high=0,tot2=0;
                     d2.data.forEach(r=>{
@@ -328,7 +329,7 @@ function App(){
             <div style={{marginBottom:20}}>{[['income','Inkomstnivåer'],['edu','Utbildning'],['civil','Civilstånd'],['bg','Bakgrund']].map(([k,l])=><div key={k} style={{display:'flex',alignItems:'center',justifyContent:'space-between',padding:'9px 0',borderBottom:'1px solid rgba(0,66,51,.08)'}}><span style={{fontSize:13,color:fi[k]?'#0a1f1a':'#7a9e96',fontWeight:fi[k]?500:400}}>{l}</span><div className={`tog${fi[k]?' on':''}`} onClick={()=>tog(k)}/></div>)}</div>
             <button className="abtn" onClick={run} disabled={loading}>{loading?<><div className="ring" style={{width:15,height:15,borderWidth:2}}/><span>Analyserar…</span></>:<><span>Starta analys</span><IArr/></>}</button>
             <div style={{flex:1}}/>
-            <div style={{marginTop:20,paddingTop:14,borderTop:'1px solid rgba(0,66,51,.1)',fontSize:9,color:'#7a9e96',letterSpacing:'.06em',textTransform:'uppercase',textAlign:'center'}}>v6.4 · SCB API 2024</div>
+            <div style={{marginTop:20,paddingTop:14,borderTop:'1px solid rgba(0,66,51,.1)',fontSize:9,color:'#7a9e96',letterSpacing:'.06em',textTransform:'uppercase',textAlign:'center'}}>v6.5 · SCB API 2024</div>
         </aside>
 
         <main className="main">
