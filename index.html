@@ -128,7 +128,7 @@ function App(){
     const [res,setRes]=useState(null);
     const [exp,setExp]=useState(false);
     const [sel,setSel]=useState({geo:'0180',g:'all',a0:25,a1:54});
-    const [fi,setFi]=useState({income:false,edu:true,civil:true,bg:true});
+    const [fi,setFi]=useState({income:true,edu:true,civil:true,bg:true});
     const tog=k=>setFi(f=>({...f,[k]:!f[k]}));
 
     const run=useCallback(async()=>{
@@ -223,59 +223,23 @@ function App(){
             }
 
             // ── 5. INKOMST via SamForvInk1 ─────────────────────────────────
-            // OBS: Kon i denna tabell är "1"=män, "2"=kvinnor, "+2"=totalt
+            // Enkel fråga: region + kon + tid → returnerar medelinkomst per åldersgrupp
             let inc=null;
             if(fi.income){
                 setMsg('Hämtar inkomstdata…');
-                const incKon = sel.g==='all' ? ['+2'] : [sel.g];
-                const incAgeMap=[
-                    {g:'16-19',lo:16,hi:19},{g:'20-24',lo:20,hi:24},{g:'25-29',lo:25,hi:29},
-                    {g:'30-34',lo:30,hi:34},{g:'35-39',lo:35,hi:39},{g:'40-44',lo:40,hi:44},
-                    {g:'45-49',lo:45,hi:49},{g:'50-54',lo:50,hi:54},{g:'55-59',lo:55,hi:59},
-                    {g:'60-64',lo:60,hi:64},{g:'65-69',lo:65,hi:69},{g:'70-74',lo:70,hi:74},
-                    {g:'75-79',lo:75,hi:79},{g:'80-84',lo:80,hi:84},{g:'85+',lo:85,hi:999}
-                ];
-                const matchedAges=incAgeMap.filter(x=>x.lo<=sel.a1&&x.hi>=sel.a0).map(x=>x.g);
-                const useAges=matchedAges.length>0?matchedAges:['25-29','30-34','35-39','40-44','45-49','50-54'];
-
-                // Medelinkomst (HE011037)
+                // Samma enkla fråga som fungerade originalt — region + kon + tid
                 const d=await scb(URLS.income,{
                     query:[
                         {code:'Region',selection:{filter:'item',values:[sel.geo]}},
-                        {code:'Kon',selection:{filter:'item',values:incKon}},
-                        {code:'Alder',selection:{filter:'item',values:useAges}},
-                        {code:'Inkomstklass',selection:{filter:'item',values:['TOT']}},
-                        {code:'ContentsCode',selection:{filter:'item',values:['HE011037']}},
-                        {code:'Tid',selection:{filter:'item',values:['2023']}}
+                        {code:'Kon',selection:{filter:'item',values:gv}},
+                        {code:'Tid',selection:{filter:'item',values:['2022']}}
                     ],
                     response:{format:'json'}
                 });
                 let tot=0,cnt=0;
                 d.data.forEach(r=>{const v=parseInt(r.values[0]||0);if(v>0){tot+=v;cnt++;}});
                 if(cnt>0){
-                    const avg=Math.round(tot/cnt)*1000;
-                    // Antal per inkomstklass (HE011039J = antal personer)
-                    const d2=await scb(URLS.income,{
-                        query:[
-                            {code:'Region',selection:{filter:'item',values:[sel.geo]}},
-                            {code:'Kon',selection:{filter:'item',values:incKon}},
-                            {code:'Alder',selection:{filter:'item',values:useAges}},
-                            {code:'Inkomstklass',selection:{filter:'item',values:['1-19','20-39','40-59','60-79','80-99','100-149','150-199','200-299','300-399','400-499','500-599','600-799','800-999','1000+']}},
-                            {code:'ContentsCode',selection:{filter:'item',values:['HE011039J']}},
-                            {code:'Tid',selection:{filter:'item',values:['2023']}}
-                        ],
-                        response:{format:'json'}
-                    });
-                    const MID={'1-19':10,'20-39':30,'40-59':50,'60-79':70,'80-99':90,'100-149':125,'150-199':175,'200-299':250,'300-399':350,'400-499':450,'500-599':550,'600-799':700,'800-999':900,'1000+':1000};
-                    let low=0,mid=0,high=0,tot2=0;
-                    d2.data.forEach(r=>{
-                        const v=parseInt(r.values[0]||0),k=r.key[3],tkr=MID[k]||0;
-                        tot2+=v;
-                        if(tkr<250)low+=v;
-                        else if(tkr<600)mid+=v;
-                        else high+=v;
-                    });
-                    if(tot2>0) inc={avg,high:pct(high,tot2),mid:pct(mid,tot2),low:pct(low,tot2)};
+                    inc={avg:Math.round(tot/cnt)*1000};
                 }
             }
 
@@ -290,6 +254,7 @@ function App(){
         const rows=[['MEDIAPRO AUDIENCE INTELLIGENCE REPORT'],['Skapad',res.ts],['Område',res.geoName],['Demografi',`${res.genderLabel}, ${res.ageRange} år`],['Total population',res.pop],['']];
         if(res.inc){rows.push(['INKOMST (SCB 2023)'],['Medelinkomst',res.inc.avg,'SEK/år'],['Höginkomst >600k',res.inc.high,'%'],['Medelinkomst 250–600k',res.inc.mid,'%'],['Låginkomst <250k',res.inc.low,'%'],['']);}
 
+        if(res.inc){rows.push(['INKOMST (SCB 2022)'],['Medelinkomst',res.inc.avg,'SEK/år'],['']);}
         if(res.edu){rows.push(['UTBILDNING (SCB 2024)'],['Eftergymnasial 3+ år',res.edu.high,'%'],['Kortare högskoleutb.',res.edu.mid,'%'],['Gymnasial/Förgymnasial',res.edu.low,'%'],['']);}
                 if(res.civil){rows.push(['CIVILSTÅND (SCB 2024)'],['Ogifta',res.civil.single,'%'],['Gifta',res.civil.married,'%'],['Skilda/Änkor/Änklingar',res.civil.other,'%'],['']);}
         if(res.bgd){rows.push(['BAKGRUND (SCB 2024)'],['Svensk bakgrund',res.bgd.swe,'%'],['Utländsk bakgrund',res.bgd.foreign,'%']);}
@@ -326,10 +291,10 @@ function App(){
                 <div style={{display:'flex',gap:5}}>{[['2','Kvinna'],['1','Man'],['all','Alla']].map(([v,l])=><div key={v} className={`pill${sel.g===v?' on':''}`} onClick={()=>setSel({...sel,g:v})}>{l}</div>)}</div>
             </div>
             <div className="sec">Datakategorier</div>
-            <div style={{marginBottom:20}}>{[['edu','Utbildning'],['civil','Civilstånd'],['bg','Bakgrund']].map(([k,l])=><div key={k} style={{display:'flex',alignItems:'center',justifyContent:'space-between',padding:'9px 0',borderBottom:'1px solid rgba(0,66,51,.08)'}}><span style={{fontSize:13,color:fi[k]?'#0a1f1a':'#7a9e96',fontWeight:fi[k]?500:400}}>{l}</span><div className={`tog${fi[k]?' on':''}`} onClick={()=>tog(k)}/></div>)}</div>
+            <div style={{marginBottom:20}}>{[['income','Inkomstnivåer'],['edu','Utbildning'],['civil','Civilstånd'],['bg','Bakgrund']].map(([k,l])=><div key={k} style={{display:'flex',alignItems:'center',justifyContent:'space-between',padding:'9px 0',borderBottom:'1px solid rgba(0,66,51,.08)'}}><span style={{fontSize:13,color:fi[k]?'#0a1f1a':'#7a9e96',fontWeight:fi[k]?500:400}}>{l}</span><div className={`tog${fi[k]?' on':''}`} onClick={()=>tog(k)}/></div>)}</div>
             <button className="abtn" onClick={run} disabled={loading}>{loading?<><div className="ring" style={{width:15,height:15,borderWidth:2}}/><span>Analyserar…</span></>:<><span>Starta analys</span><IArr/></>}</button>
             <div style={{flex:1}}/>
-            <div style={{marginTop:20,paddingTop:14,borderTop:'1px solid rgba(0,66,51,.1)',fontSize:9,color:'#7a9e96',letterSpacing:'.06em',textTransform:'uppercase',textAlign:'center'}}>v6.6 · SCB API 2024</div>
+            <div style={{marginTop:20,paddingTop:14,borderTop:'1px solid rgba(0,66,51,.1)',fontSize:9,color:'#7a9e96',letterSpacing:'.06em',textTransform:'uppercase',textAlign:'center'}}>v6.8 · SCB API 2024</div>
         </aside>
 
         <main className="main">
@@ -356,6 +321,8 @@ function App(){
                 <div className="grid">
 
 
+                    {res.inc&&<Card icon={IWallet} title="Inkomst" delay="fu2" main={`${Math.floor(res.inc.avg/1000)} tkr/år`} sub="Medelinkomst · SCB 2022">
+                    </Card>}
                     {res.edu&&<Card icon={IGrad} title="Utbildning" delay="fu3" note="SCB 2024">
                         <BarRow label="Eftergymnasial 3+ år" value={res.edu.high}/>
                         <BarRow label="Kortare högskoleutb." value={res.edu.mid} color="#006650"/>
