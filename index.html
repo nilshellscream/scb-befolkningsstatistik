@@ -201,13 +201,14 @@ function App(){
             let bgd=null;
             if(fi.bg){
                 setMsg('Hämtar bakgrundsdata…');
+                // UtlSvBakgGrov: åldrar 0-100+ (enskilda år, 100+ för 100 och uppåt)
+                const bgAges=ages.map(a=>parseInt(a)>=100?'100+':a).filter((v,i,a)=>a.indexOf(v)===i);
                 const d=await scb(URLS.bg,{
                     query:[
                         {code:'Region',selection:{filter:'item',values:[sel.geo]}},
                         {code:'UtlBakgrund',selection:{filter:'item',values:['1','2']}},
-                        {code:'Alder',selection:{filter:'item',values:ages}},
+                        {code:'Alder',selection:{filter:'item',values:bgAges}},
                         {code:'Kon',selection:{filter:'item',values:gv}},
-                        {code:'ContentsCode',selection:{filter:'item',values:['000001NJ']}},
                         {code:'Tid',selection:{filter:'item',values:['2024']}}
                     ],
                     response:{format:'json'}
@@ -327,7 +328,7 @@ function App(){
             <div style={{marginBottom:20}}>{[['income','Inkomstnivåer'],['edu','Utbildning'],['civil','Civilstånd'],['bg','Bakgrund']].map(([k,l])=><div key={k} style={{display:'flex',alignItems:'center',justifyContent:'space-between',padding:'9px 0',borderBottom:'1px solid rgba(0,66,51,.08)'}}><span style={{fontSize:13,color:fi[k]?'#0a1f1a':'#7a9e96',fontWeight:fi[k]?500:400}}>{l}</span><div className={`tog${fi[k]?' on':''}`} onClick={()=>tog(k)}/></div>)}</div>
             <button className="abtn" onClick={run} disabled={loading}>{loading?<><div className="ring" style={{width:15,height:15,borderWidth:2}}/><span>Analyserar…</span></>:<><span>Starta analys</span><IArr/></>}</button>
             <div style={{flex:1}}/>
-            <div style={{marginTop:20,paddingTop:14,borderTop:'1px solid rgba(0,66,51,.1)',fontSize:9,color:'#7a9e96',letterSpacing:'.06em',textTransform:'uppercase',textAlign:'center'}}>v6.3 · SCB API 2024</div>
+            <div style={{marginTop:20,paddingTop:14,borderTop:'1px solid rgba(0,66,51,.1)',fontSize:9,color:'#7a9e96',letterSpacing:'.06em',textTransform:'uppercase',textAlign:'center'}}>v6.4 · SCB API 2024</div>
         </aside>
 
         <main className="main">
