@@ -74,7 +74,8 @@ const URLS={
 
 const LAN=[{c:"01",n:"Stockholms län"},{c:"03",n:"Uppsala län"},{c:"04",n:"Södermanlands län"},{c:"05",n:"Östergötlands län"},{c:"06",n:"Jönköpings län"},{c:"07",n:"Kronobergs län"},{c:"08",n:"Kalmar län"},{c:"09",n:"Gotlands län"},{c:"10",n:"Blekinge län"},{c:"12",n:"Skåne län"},{c:"13",n:"Hallands län"},{c:"14",n:"Västra Götalands län"},{c:"17",n:"Värmlands län"},{c:"18",n:"Örebro län"},{c:"19",n:"Västmanlands län"},{c:"20",n:"Dalarnas län"},{c:"21",n:"Gävleborgs län"},{c:"22",n:"Västernorrlands län"},{c:"23",n:"Jämtlands län"},{c:"24",n:"Västerbottens län"},{c:"25",n:"Norrbottens län"}];
 const CITIES=[{c:"0180",n:"Stockholm"},{c:"1480",n:"Göteborg"},{c:"1280",n:"Malmö"},{c:"0380",n:"Uppsala"},{c:"0580",n:"Linköping"},{c:"1980",n:"Västerås"},{c:"1283",n:"Helsingborg"},{c:"0181",n:"Södertälje"},{c:"0581",n:"Norrköping"},{c:"1490",n:"Borås"},{c:"1281",n:"Lund"},{c:"1880",n:"Örebro"},{c:"2480",n:"Umeå"},{c:"2180",n:"Gävle"},{c:"1380",n:"Halmstad"}];
-const ALL=[...CITIES,...LAN];
+const SVERIGE=[{c:"00",n:"Hela Sverige"}];
+const ALL=[...SVERIGE,...CITIES,...LAN];
 const pct=(a,t)=>t>0?Math.round(a/t*100):0;
 
 async function scb(url,q){
@@ -260,7 +261,7 @@ function App(){
 
     const dl=()=>{
         if(!res)return;setExp(true);
-        const rows=[['MEDIAPRO AUDIENCE INTELLIGENCE REPORT'],['Skapad',res.ts],['Område',res.geoName],['Demografi',`${res.genderLabel}, ${res.ageRange} år`],['Total population',res.pop],['']];
+        const rows=[['SCB AUDIENCE INTELLIGENCE REPORT'],['Skapad',res.ts],['Område',res.geoName],['Demografi',`${res.genderLabel}, ${res.ageRange} år`],['Total population',res.pop],['']];
         if(res.inc){rows.push(['INKOMST (SCB 2023)'],['Medelinkomst',res.inc.avg,'SEK/år'],['Höginkomst >600k',res.inc.high,'%'],['Medelinkomst 250–600k',res.inc.mid,'%'],['Låginkomst <250k',res.inc.low,'%'],['']);}
 
         if(res.inc){rows.push(['INKOMST (SCB 2022)'],['Medelinkomst',res.inc.avg,'SEK/år'],['']);}
@@ -270,7 +271,7 @@ function App(){
         const csv=rows.map(r=>r.join(';')).join('\n');
         const a=document.createElement('a');
         a.href=URL.createObjectURL(new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8'}));
-        a.download=`MediaPro_${res.geoName.replace(/\s/g,'_')}.csv`;a.click();
+        a.download=`SCB_${res.geoName.replace(/\s/g,'_')}.csv`;a.click();
         setTimeout(()=>setExp(false),1000);
     };
 
@@ -284,6 +285,7 @@ function App(){
             <div style={{marginBottom:12}}>
                 <label className="lbl">Geografiskt område</label>
                 <select className="inp" value={sel.geo} onChange={e=>setSel({...sel,geo:e.target.value})}>
+                    <optgroup label="Nationellt">{SVERIGE.map(s=><option key={s.c} value={s.c}>{s.n}</option>)}</optgroup>
                     <optgroup label="Städer">{CITIES.map(c=><option key={c.c} value={c.c}>{c.n}</option>)}</optgroup>
                     <optgroup label="Län">{LAN.map(l=><option key={l.c} value={l.c}>{l.n}</option>)}</optgroup>
                 </select>
@@ -303,7 +305,7 @@ function App(){
             <div style={{marginBottom:20}}>{[['income','Inkomstnivåer'],['edu','Utbildning'],['civil','Civilstånd'],['bg','Bakgrund']].map(([k,l])=><div key={k} style={{display:'flex',alignItems:'center',justifyContent:'space-between',padding:'9px 0',borderBottom:'1px solid rgba(0,66,51,.08)'}}><span style={{fontSize:13,color:fi[k]?'#0a1f1a':'#7a9e96',fontWeight:fi[k]?500:400}}>{l}</span><div className={`tog${fi[k]?' on':''}`} onClick={()=>tog(k)}/></div>)}</div>
             <button className="abtn" onClick={run} disabled={loading}>{loading?<><div className="ring" style={{width:15,height:15,borderWidth:2}}/><span>Analyserar…</span></>:<><span>Starta analys</span><IArr/></>}</button>
             <div style={{flex:1}}/>
-            <div style={{marginTop:20,paddingTop:14,borderTop:'1px solid rgba(0,66,51,.1)',fontSize:9,color:'#7a9e96',letterSpacing:'.06em',textTransform:'uppercase',textAlign:'center'}}>v6.9 · SCB API 2024</div>
+            <div style={{marginTop:20,paddingTop:14,borderTop:'1px solid rgba(0,66,51,.1)',fontSize:9,color:'#7a9e96',letterSpacing:'.06em',textTransform:'uppercase',textAlign:'center'}}>v7.0 · SCB API 2024</div>
         </aside>
 
         <main className="main">
