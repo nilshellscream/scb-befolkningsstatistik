@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SCB — Audience Intelligence</title>
-    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
     <style>
@@ -57,18 +57,15 @@
 </head>
 <body>
 <div id="root"></div>
-<script type="text/babel">
+<script type="text/babel" data-presets="react">
+/** @jsxRuntime classic */
 const {useState,useCallback}=React;
 const SCB="https://api.scb.se/OV0104/v1/doris/sv/ssd/START";
 
 const URLS={
-    // BefolkningNy: region, civilstand, alder, kon — används för pop + civilstånd
     pop:    `${SCB}/BE/BE0101/BE0101A/BefolkningNy`,
-    // Utbildning: region, kon, alder(grupper), UtbildningsNiva — 16-74 år, 2019-2024
     edu:    `${SCB}/UF/UF0506/UF0506B/UtbBefRegionR`,
-    // Bakgrund grov: region, UtlBakgrund(1=utl,2=sv), alder, kon
     bg:     `${SCB}/BE/BE0101/BE0101Q/UtlSvBakgGrov`,
-    // Inkomst: region, kon, alder, inkomstklass
     income: `${SCB}/HE/HE0110/HE0110A/SamForvInk1`,
 };
 
@@ -139,8 +136,6 @@ function App(){
             const ages=Array.from({length:Math.max(0,sel.a1-sel.a0+1)},(_,i)=>(sel.a0+i).toString());
             const gv=sel.g==='all'?['1','2']:[sel.g];
 
-            // ── 1+2. BEFOLKNING & CIVILSTÅND via BefolkningNy ──────────────
-            // Civilstand koder: OG=ogifta, G=gifta, SK=skilda, ÄNKL=änkor/änklingar
             setMsg('Hämtar befolkning och civilståndsdata…');
             const pd=await scb(URLS.pop,{
                 query:[
@@ -167,13 +162,9 @@ function App(){
                 civil={single:pct(t.og,tot),married:pct(t.g,tot),other:pct(t.other,tot)};
             }
 
-            // ── 3. UTBILDNING via UF0506B/UtbBefRegionR ─────────────────────────────────
-            // Region+UtbildningsNiva+Alder(enskilda 16-95)+Kon, år 2008-2024
-            // UtbildningsNiva koder: 1(<9år),2(förg),3(gymn≤2),4(gymn3),5(efterg<3),6(efterg≥3),7(forskar)
             let edu=null;
             if(fi.edu){
                 setMsg('Hämtar utbildningsdata…');
-                // UtbBefRegionR tar enskilda åldrar 16-95
                 const useGroups=ages.filter(a=>parseInt(a)>=16&&parseInt(a)<=95);
                 if(useGroups.length===0) useGroups.push(...['25','30','35','40','45','50']);
                 const d=await scb(URLS.edu,{
@@ -197,12 +188,9 @@ function App(){
                 if(s>0) edu={high:pct(t.hi,s),mid:pct(t.mi,s),low:pct(t.lo,s)};
             }
 
-            // ── 4. BAKGRUND via UtlSvBakgGrov ──────────────────────────────
-            // UtlBakgrund: 1=utländsk bakgrund, 2=svensk bakgrund
             let bgd=null;
             if(fi.bg){
                 setMsg('Hämtar bakgrundsdata…');
-                // UtlSvBakgGrov: åldrar 0-100+ (enskilda år, 100+ för 100 och uppåt)
                 const bgAges=ages.map(a=>parseInt(a)>=100?'100+':a).filter((v,i,a)=>a.indexOf(v)===i);
                 const d=await scb(URLS.bg,{
                     query:[
@@ -223,12 +211,9 @@ function App(){
                 if(s>0) bgd={swe:pct(t.sv,s),foreign:pct(t.utl,s)};
             }
 
-            // ── 5. INKOMST via SamForvInk1 ─────────────────────────────────
-            // Enkel fråga: region + kon + tid → returnerar medelinkomst per åldersgrupp
             let inc=null;
             if(fi.income){
                 setMsg('Hämtar inkomstdata…');
-                // Filtrera på åldersgrupper som matchar valt intervall
                 const incGroups=[
                     {g:'16-19',lo:16,hi:19},{g:'20-24',lo:20,hi:24},{g:'25-29',lo:25,hi:29},
                     {g:'30-34',lo:30,hi:34},{g:'35-39',lo:35,hi:39},{g:'40-44',lo:40,hi:44},
@@ -262,11 +247,9 @@ function App(){
     const dl=()=>{
         if(!res)return;setExp(true);
         const rows=[['SCB AUDIENCE INTELLIGENCE REPORT'],['Skapad',res.ts],['Område',res.geoName],['Demografi',`${res.genderLabel}, ${res.ageRange} år`],['Total population',res.pop],['']];
-        if(res.inc){rows.push(['INKOMST (SCB 2023)'],['Medelinkomst',res.inc.avg,'SEK/år'],['Höginkomst >600k',res.inc.high,'%'],['Medelinkomst 250–600k',res.inc.mid,'%'],['Låginkomst <250k',res.inc.low,'%'],['']);}
-
         if(res.inc){rows.push(['INKOMST (SCB 2022)'],['Medelinkomst',res.inc.avg,'SEK/år'],['']);}
         if(res.edu){rows.push(['UTBILDNING (SCB 2024)'],['Eftergymnasial 3+ år',res.edu.high,'%'],['Kortare högskoleutb.',res.edu.mid,'%'],['Gymnasial/Förgymnasial',res.edu.low,'%'],['']);}
-                if(res.civil){rows.push(['CIVILSTÅND (SCB 2024)'],['Ogifta',res.civil.single,'%'],['Gifta',res.civil.married,'%'],['Skilda/Änkor/Änklingar',res.civil.other,'%'],['']);}
+        if(res.civil){rows.push(['CIVILSTÅND (SCB 2024)'],['Ogifta',res.civil.single,'%'],['Gifta',res.civil.married,'%'],['Skilda/Änkor/Änklingar',res.civil.other,'%'],['']);}
         if(res.bgd){rows.push(['BAKGRUND (SCB 2024)'],['Svensk bakgrund',res.bgd.swe,'%'],['Utländsk bakgrund',res.bgd.foreign,'%']);}
         const csv=rows.map(r=>r.join(';')).join('\n');
         const a=document.createElement('a');
@@ -330,8 +313,6 @@ function App(){
                     </div>
                 </div>
                 <div className="grid">
-
-
                     {res.inc&&<Card icon={IWallet} title="Inkomst" delay="fu2" main={`${Math.floor(res.inc.avg/1000)} tkr/år`} sub="Medelinkomst · SCB 2022">
                     </Card>}
                     {res.edu&&<Card icon={IGrad} title="Utbildning" delay="fu3" note="SCB 2024">
@@ -339,7 +320,7 @@ function App(){
                         <BarRow label="Kortare högskoleutb." value={res.edu.mid} color="#006650"/>
                         <BarRow label="Gymnasial / Förgymnasial" value={res.edu.low} color="#7a9e96"/>
                     </Card>}
-                                        {res.civil&&<Card icon={IHeart} title="Civilstånd" delay="fu4" note="SCB 2024">
+                    {res.civil&&<Card icon={IHeart} title="Civilstånd" delay="fu4" note="SCB 2024">
                         <BarRow label="Ogifta" value={res.civil.single}/>
                         <BarRow label="Gifta" value={res.civil.married} color="#006650"/>
                         <BarRow label="Skilda / Änkor / Änklingar" value={res.civil.other} color="#7a9e96"/>
@@ -351,7 +332,7 @@ function App(){
                 </div>
                 <div className="snote fu fu6">
                     <div style={{color:'#7a9e96',flexShrink:0,marginTop:1}}><IInfo/></div>
-                    <div>All data hämtas direkt från <strong>Statistiska centralbyrån (SCB)</strong>. Befolkning, civilstånd, utbildning och bakgrund: 2024. Inkomst: 2023. Inga estimerade värden används.</div>
+                    <div>All data hämtas direkt från <strong>Statistiska centralbyrån (SCB)</strong>. Befolkning, civilstånd, utbildning och bakgrund: 2024. Inkomst: 2022. Inga estimerade värden används.</div>
                 </div>
             </div>}
         </main>
